@@ -2,7 +2,7 @@
 
 import * as THREE from 'three';
 
-import imageURL from './crate.png';
+import imageURL from './desert.png';
 import enemyImageURL from './enemy.png';
 
 const main = () => {
@@ -106,15 +106,21 @@ const main2 = () => {
 		stats.domElement.style.zIndex = 100;
 		container.appendChild( stats.domElement );
 		*/
+		
+		const loader = new THREE.TextureLoader();
+		
 		// LIGHT
 		var light = new THREE.PointLight(0xffffff);
 		light.position.set(0,250,0);
 		scene.add(light);
 		
 		// FLOOR
-		var floorTexture = new THREE.TextureLoader().load(imageURL);
+		var floorTexture = loader.load(imageURL);
+		floorTexture.magFilter = THREE.NearestFilter;
+		floorTexture.minFilter = THREE.NearestMipMapLinearFilter;
 		floorTexture.wrapS = floorTexture.wrapT = THREE.RepeatWrapping; 
 		floorTexture.repeat.set( 10, 10 );
+		
 		var floorMaterial = new THREE.MeshBasicMaterial( { map: floorTexture, side: THREE.DoubleSide } );
 		var floorGeometry = new THREE.PlaneGeometry(1000, 1000, 10, 10);
 		var floor = new THREE.Mesh(floorGeometry, floorMaterial);
@@ -125,15 +131,20 @@ const main2 = () => {
 		var skyBoxGeometry = new THREE.CubeGeometry( 10000, 10000, 10000 );
 		var skyBoxMaterial = new THREE.MeshBasicMaterial( { color: 0x9999ff, side: THREE.BackSide } );
 		var skyBox = new THREE.Mesh( skyBoxGeometry, skyBoxMaterial );
-		// scene.add(skyBox);
+		scene.add(skyBox);
 		scene.fog = new THREE.FogExp2( 0x9999ff, 0.00025 );
 
 		////////////
 		// CUSTOM //
 		////////////
 
-		var ballTexture = new THREE.TextureLoader().load(imageURL);
-		var crateTexture = new THREE.TextureLoader().load(enemyImageURL);
+		//var ballTexture = loader.load(imageURL);
+		/*
+		var ballTexture = loader.load(enemyImageURL);
+		ballTexture.magFilter = THREE.NearestFilter;
+		ballTexture.minFilter = THREE.NearestMipMapLinearFilter;
+		
+		*/
 
 		/*
 		var ballMaterial = new THREE.SpriteMaterial( { map: ballTexture, useScreenCoordinates: true, alignment: THREE.SpriteAlignment.topLeft  } );
@@ -148,6 +159,10 @@ const main2 = () => {
 		sprite.scale.set( 64, 64, 1.0 ); // imageWidth, imageHeight
 		scene.add( sprite );
 		*/
+
+		var crateTexture = loader.load(enemyImageURL);
+		crateTexture.magFilter = THREE.NearestFilter;
+		crateTexture.minFilter = THREE.NearestMipMapLinearFilter;
 
 		var crateMaterial = new THREE.SpriteMaterial( { map: crateTexture, useScreenCoordinates: false, color: 0xff0000 } );
 		var sprite2 = new THREE.Sprite( crateMaterial );
