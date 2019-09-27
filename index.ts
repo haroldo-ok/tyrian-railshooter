@@ -5,71 +5,9 @@ import * as THREE from 'three';
 import imageURL from './desert.png';
 import enemyImageURL from './enemy.png';
 
-const main = () => {
-	const canvas = document.querySelector('#c');
-	const renderer = new THREE.WebGLRenderer({canvas});
-	
-	const fov = 75;
-	const aspect = 2;
-	const near = 0.1;
-	const far = 5;
-	
-	const camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
-	
-	camera.position.z = 2;
-	
-	const scene = new THREE.Scene();
-	
-	const boxWidth = 1;
-	const boxHeight = 1;
-	const boxDepth = 1;
-	const geometry = new THREE.BoxGeometry(boxWidth, boxHeight, boxDepth);
-	
-	const material = new THREE.MeshPhongMaterial({color: 0x44aa88});
-	
-	const cube = new THREE.Mesh(geometry, material);
-	//scene.add(cube);
-	
-	
-	//const enemyTexture = THREE.ImageUtils.loadTexture('enemy.png');
-	const enemyTexture = THREE.ImageUtils.loadTexture(imageURL);
-	const enemyMaterial = new THREE.SpriteMaterial({map: enemyTexture});
-	const sprite2 = new THREE.Sprite(enemyMaterial);
-	sprite2.position.set(0, 0, 0 );
-	//sprite2.scale.set( 21, 21, 1.0 ); // imageWidth, imageHeight
-	sprite2.scale.set(64, 64, 1.0 ); // imageWidth, imageHeight
-	scene.add(sprite2);
-
-	
-	const color = 0xFFFFFF;
-	const intensity = 1;
-	const light = new THREE.DirectionalLight(color, intensity);
-	light.position.set(-1, 2, 4);
-	scene.add(light);	
-	
-	console.info(scene);
-	
-	
-	const render = time => {
-		time *= 0.001; // Convert to secs
-		
-		cube.rotation.x = time;
-		cube.rotation.y = time;
-		
-		renderer.render(scene, camera);
-		
-		requestAnimationFrame(render);
-	}
-
-	requestAnimationFrame(render);
-	
-	console.log('OK!');
-}
-
 const main2 = () => {
 	// standard global variables
 	var container, scene, camera, renderer, controls, stats;
-//	var keyboard = new THREEx.KeyboardState();
 	var clock = new THREE.Clock();
 	// custom global variables
 	var cube;
@@ -91,21 +29,6 @@ const main2 = () => {
 		const canvas = document.querySelector('#c');
 		renderer = new THREE.WebGLRenderer( {canvas, antialias:true} );
 		renderer.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
-		//container = document.getElementById( 'ThreeJS' );
-		//container.appendChild( renderer.domElement );
-		// EVENTS
-		//THREEx.WindowResize(renderer, camera);
-		//THREEx.FullScreen.bindKey({ charCode : 'm'.charCodeAt(0) });
-		// CONTROLS
-		//controls = new THREE.OrbitControls( camera, renderer.domElement );
-		// STATS
-		/*
-		stats = new Stats();
-		stats.domElement.style.position = 'absolute';
-		stats.domElement.style.bottom = '0px';
-		stats.domElement.style.zIndex = 100;
-		container.appendChild( stats.domElement );
-		*/
 		
 		const loader = new THREE.TextureLoader();
 		
@@ -138,27 +61,6 @@ const main2 = () => {
 		// CUSTOM //
 		////////////
 
-		//var ballTexture = loader.load(imageURL);
-		/*
-		var ballTexture = loader.load(enemyImageURL);
-		ballTexture.magFilter = THREE.NearestFilter;
-		ballTexture.minFilter = THREE.NearestMipMapLinearFilter;
-		
-		*/
-
-		/*
-		var ballMaterial = new THREE.SpriteMaterial( { map: ballTexture, useScreenCoordinates: true, alignment: THREE.SpriteAlignment.topLeft  } );
-		var sprite = new THREE.Sprite( ballMaterial );
-		sprite.position.set( 50, 50, 0 );
-		sprite.scale.set( 64, 64, 1.0 ); // imageWidth, imageHeight
-		scene.add( sprite );
-
-		var ballMaterial = new THREE.SpriteMaterial( { map: ballTexture, useScreenCoordinates: true, alignment: THREE.SpriteAlignment.bottomRight } );
-		var sprite = new THREE.Sprite( ballMaterial );
-		sprite.position.set( window.innerWidth - 50, window.innerHeight - 50, 0 );
-		sprite.scale.set( 64, 64, 1.0 ); // imageWidth, imageHeight
-		scene.add( sprite );
-		*/
 
 		var crateTexture = loader.load(enemyImageURL);
 		crateTexture.magFilter = THREE.NearestFilter;
@@ -170,7 +72,6 @@ const main2 = () => {
 		sprite2.scale.set( 64, 64, 1.0 ); // imageWidth, imageHeight
 		scene.add( sprite2 );
 
-		//var crateMaterial = new THREE.SpriteMaterial( { map: crateTexture, useScreenCoordinates: false, color: 0x00ff00 } );
 		var crateMaterial = new THREE.SpriteMaterial( { map: crateTexture, useScreenCoordinates: false } );
 		var sprite2 = new THREE.Sprite( crateMaterial );
 		sprite2.position.set( -0, 50, 0 );
@@ -188,19 +89,6 @@ const main2 = () => {
 	{
 		requestAnimationFrame( animate );
 		render();		
-		update();
-	}
-	function update()
-	{
-		/*
-		if ( keyboard.pressed("z") ) 
-		{ 
-			// do something
-		}
-		*/
-
-		//controls.update();
-		//stats.update();
 	}
 	function render() 
 	{
