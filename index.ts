@@ -5,6 +5,10 @@ import * as THREE from 'three';
 import imageURL from './desert.png';
 import enemyImageURL from './enemy.png';
 
+let floorTexture;
+let enemySprite;
+let enemyTexture;
+
 const main2 = () => {
 	// standard global variables
 	var container, scene, camera, renderer, controls, stats;
@@ -38,7 +42,7 @@ const main2 = () => {
 		scene.add(light);
 		
 		// FLOOR
-		var floorTexture = loader.load(imageURL);
+		floorTexture = loader.load(imageURL);
 		floorTexture.magFilter = THREE.NearestFilter;
 		floorTexture.minFilter = THREE.NearestMipMapLinearFilter;
 		floorTexture.wrapS = floorTexture.wrapT = THREE.RepeatWrapping; 
@@ -65,6 +69,7 @@ const main2 = () => {
 		var crateTexture = loader.load(enemyImageURL);
 		crateTexture.magFilter = THREE.NearestFilter;
 		crateTexture.minFilter = THREE.NearestMipMapLinearFilter;
+		enemyTexture = crateTexture;
 
 		var crateMaterial = new THREE.SpriteMaterial( { map: crateTexture, useScreenCoordinates: false, color: 0xff0000 } );
 		var sprite2 = new THREE.Sprite( crateMaterial );
@@ -76,6 +81,7 @@ const main2 = () => {
 		var sprite2 = new THREE.Sprite( crateMaterial );
 		sprite2.position.set( -0, 50, 0 );
 		sprite2.scale.set( 64, 64, 1.0 ); // imageWidth, imageHeight
+		enemySprite = sprite2;
 		scene.add( sprite2 );
 
 		var crateMaterial = new THREE.SpriteMaterial( { map: crateTexture, useScreenCoordinates: false, color: 0x0000ff } );
@@ -88,8 +94,21 @@ const main2 = () => {
 	function animate() 
 	{
 		requestAnimationFrame( animate );
+		update();
 		render();		
 	}
+	
+	function update() 
+	{
+		const delta = clock.getDelta();
+		
+		floorTexture.offset.y -= delta * 6;
+		//enemyTexture.offset.x += 0.001;
+		//enemySprite.position.x++;
+		//enemySprite.position.y++;
+		enemySprite.position.z += delta * 100;
+	}
+	
 	function render() 
 	{
 		renderer.render( scene, camera );
