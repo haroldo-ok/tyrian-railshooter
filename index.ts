@@ -8,6 +8,7 @@ import enemyImageURL from './NEWSH2.SHP.png';
 let floorTexture;
 let enemySprite;
 let enemyTexture;
+let enemyFrame = 0;
 
 const main2 = () => {
 	// standard global variables
@@ -108,9 +109,11 @@ const main2 = () => {
 		//enemySprite.position.y++;
 		enemySprite.position.z += delta * 100;
 		
+		enemyFrame = (enemyFrame + delta * 8) % 8;
+		
 		//enemyTexture.repeat.set( 1 / (256/24), 1 / (256/24) );
 		enemyTexture.repeat.set( 1 / (256/24), 1 / (256/24) );
-		enemyTexture.offset.x = 0;
+		enemyTexture.offset.x = Math.floor(enemyFrame) * (24 / 256);
 		enemyTexture.offset.y = 64 / 256;
 	}
 	
