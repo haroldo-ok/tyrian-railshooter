@@ -3,7 +3,7 @@
 import * as THREE from 'three';
 
 import imageURL from './desert.png';
-import enemyImageURL from './enemy.png';
+import enemyImageURL from './NEWSH2.SHP.png';
 
 let floorTexture;
 let enemySprite;
@@ -107,6 +107,11 @@ const main2 = () => {
 		//enemySprite.position.x++;
 		//enemySprite.position.y++;
 		enemySprite.position.z += delta * 100;
+		
+		//enemyTexture.repeat.set( 1 / (256/24), 1 / (256/24) );
+		enemyTexture.repeat.set( 1 / (256/24), 1 / (256/24) );
+		enemyTexture.offset.x = 0;
+		enemyTexture.offset.y = 64 / 256;
 	}
 	
 	function render() 
