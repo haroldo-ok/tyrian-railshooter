@@ -10,6 +10,9 @@ let enemySprite;
 let enemyTexture;
 let enemyFrame = 0;
 
+let enemyPath;
+let pathPosition = 0;
+
 const main2 = () => {
 	// standard global variables
 	var container, scene, camera, renderer, controls, stats;
@@ -106,6 +109,18 @@ const main2 = () => {
 		sprite2.scale.set( 64, 64, 1.0 ); // imageWidth, imageHeight
 		scene.add( sprite2 );
 		*/
+		
+		// Path to follow
+		const path = new THREE.Path([
+			new THREE.Vector2(-50, -50),
+			new THREE.Vector2(0, -50)
+		]);
+		var arcRadius = 50;
+		path.moveTo(0, 0 - arcRadius);
+		path.absarc(0, 0, arcRadius, -Math.PI / 2, 0, false);
+		path.lineTo(50, 100);
+		path.lineTo(-50, 300);
+		enemyPath = path;
 	}
 	function animate() 
 	{
@@ -123,7 +138,13 @@ const main2 = () => {
 		//enemySprite.position.x++;
 		//enemySprite.position.y++;
 		
-		enemySprite.position.z += delta * 100;
+		//enemySprite.position.z += delta * 100;
+		pathPosition = (pathPosition + delta) % 1;
+		const point = enemyPath.getPointAt(pathPosition);
+		enemySprite.position.x = point.x;
+		enemySprite.position.y = 50 + pathPosition * 10;
+		enemySprite.position.z = point.y;
+		
 		
 		enemyFrame = (enemyFrame + delta * 16) % 8;
 		
