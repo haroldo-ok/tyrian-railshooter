@@ -91,6 +91,21 @@ const main2 = () => {
 		sprite2.scale.set( 64, 64, 1.0 ); // imageWidth, imageHeight
 		scene.add( sprite2 );
 
+		// Temporary sprite to debug animation glitch
+		/*
+		var crateTexture2 = loader.load(enemyImageURL);
+		crateTexture2.magFilter = THREE.NearestFilter;
+		crateTexture2.minFilter = THREE.NearestMipMapLinearFilter;
+		crateTexture2.repeat.set( 1 / (256/24), 1 / (256/24) );
+		crateTexture2.offset.x = Math.floor(enemyFrame) * (24 / 256);
+		crateTexture2.offset.y = 64 / 256;
+		
+		var crateMaterial = new THREE.SpriteMaterial( { map: crateTexture2, useScreenCoordinates: false, color: 0x00ff00 } );
+		var sprite2 = new THREE.Sprite( crateMaterial );
+		sprite2.position.set( 100, 50, 0 );
+		sprite2.scale.set( 64, 64, 1.0 ); // imageWidth, imageHeight
+		scene.add( sprite2 );
+		*/
 	}
 	function animate() 
 	{
@@ -107,9 +122,10 @@ const main2 = () => {
 		//enemyTexture.offset.x += 0.001;
 		//enemySprite.position.x++;
 		//enemySprite.position.y++;
+		
 		enemySprite.position.z += delta * 100;
 		
-		enemyFrame = (enemyFrame + delta * 8) % 8;
+		enemyFrame = (enemyFrame + delta * 16) % 8;
 		
 		//enemyTexture.repeat.set( 1 / (256/24), 1 / (256/24) );
 		enemyTexture.repeat.set( 1 / (256/24), 1 / (256/24) );
