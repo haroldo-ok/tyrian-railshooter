@@ -12,6 +12,7 @@ let enemyFrame = 0;
 
 let enemyPath;
 let pathPosition = 0;
+let enemies;
 
 const main2 = () => {
 	// standard global variables
@@ -75,20 +76,24 @@ const main2 = () => {
 		crateTexture.minFilter = THREE.NearestMipMapLinearFilter;
 		enemyTexture = crateTexture;
 
-		var crateMaterial = new THREE.SpriteMaterial( { map: crateTexture, useScreenCoordinates: false, color: 0xff0000 } );
+		var crateMaterial = new THREE.SpriteMaterial( { map: crateTexture, color: 0xff0000 } );
 		var sprite2 = new THREE.Sprite( crateMaterial );
 		sprite2.position.set( -100, 50, 0 );
 		sprite2.scale.set( 64, 64, 1.0 ); // imageWidth, imageHeight
 		scene.add( sprite2 );
 
-		var crateMaterial = new THREE.SpriteMaterial( { map: crateTexture, useScreenCoordinates: false } );
-		var sprite2 = new THREE.Sprite( crateMaterial );
-		sprite2.position.set( -0, 50, 0 );
-		sprite2.scale.set( 64, 64, 1.0 ); // imageWidth, imageHeight
-		enemySprite = sprite2;
-		scene.add( sprite2 );
+		enemies = [...Array(10)].map((o, i) => {
+			var crateMaterial = new THREE.SpriteMaterial( { map: crateTexture } );
+			var sprite2 = new THREE.Sprite( crateMaterial );
+			sprite2.position.set( -0, 50, 0 );
+			sprite2.scale.set( 64, 64, 1.0 ); // imageWidth, imageHeight
+			enemySprite = sprite2;
+			scene.add( sprite2 );
+			return sprite2;
+		});
+		enemySprite = enemies[0];
 
-		var crateMaterial = new THREE.SpriteMaterial( { map: crateTexture, useScreenCoordinates: false, color: 0x0000ff } );
+		var crateMaterial = new THREE.SpriteMaterial( { map: crateTexture, color: 0x0000ff } );
 		var sprite2 = new THREE.Sprite( crateMaterial );
 		sprite2.position.set( 100, 50, 0 );
 		sprite2.scale.set( 64, 64, 1.0 ); // imageWidth, imageHeight
@@ -140,10 +145,14 @@ const main2 = () => {
 		
 		//enemySprite.position.z += delta * 100;
 		pathPosition = (pathPosition + delta) % 1;
-		const point = enemyPath.getPointAt(pathPosition);
-		enemySprite.position.x = point.x;
-		enemySprite.position.y = 50 + pathPosition * 10;
-		enemySprite.position.z = point.y;
+		
+		enemies.forEach((enemy, i) => {
+			const position = (pathPosition + i / enemies.length) % 1;
+			const point = enemyPath.getPointAt(position);
+			enemy.position.x = point.x;
+			enemy.position.y = 50 + pathPosition * 10;
+			enemy.position.z = point.y;
+		});
 		
 		
 		enemyFrame = (enemyFrame + delta * 16) % 8;
