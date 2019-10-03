@@ -10,9 +10,12 @@ let enemySprite;
 let enemyTexture;
 let enemyFrame = 0;
 
+let ushipTexture;
+
 let enemyPath;
 let pathPosition = 0;
 let enemies;
+let uships;
 
 const main2 = () => {
 	// standard global variables
@@ -74,6 +77,8 @@ const main2 = () => {
 		var crateTexture = loader.load(enemyImageURL);
 		crateTexture.magFilter = THREE.NearestFilter;
 		crateTexture.minFilter = THREE.NearestMipMapLinearFilter;
+		crateTexture.repeat.set( 1 / (256/24), 1 / (256/24) );
+		crateTexture.offset.y = 64 / 256;
 		enemyTexture = crateTexture;
 
 		var crateMaterial = new THREE.SpriteMaterial( { map: crateTexture, color: 0xff0000 } );
@@ -87,11 +92,11 @@ const main2 = () => {
 			var sprite2 = new THREE.Sprite( crateMaterial );
 			sprite2.position.set( -0, 50, 0 );
 			sprite2.scale.set( 64, 64, 1.0 ); // imageWidth, imageHeight
-			enemySprite = sprite2;
 			scene.add( sprite2 );
 			return sprite2;
 		});
 		enemySprite = enemies[0];
+
 
 		var crateMaterial = new THREE.SpriteMaterial( { map: crateTexture, color: 0x0000ff } );
 		var sprite2 = new THREE.Sprite( crateMaterial );
@@ -99,6 +104,31 @@ const main2 = () => {
 		sprite2.scale.set( 64, 64, 1.0 ); // imageWidth, imageHeight
 		scene.add( sprite2 );
 
+		
+
+		ushipTexture = loader.load(enemyImageURL);
+		ushipTexture.magFilter = THREE.NearestFilter;
+		ushipTexture.minFilter = THREE.NearestMipMapLinearFilter;
+		ushipTexture.repeat.set( 1 / (256/24), 1 / (256/24) );
+		ushipTexture.offset.y = 92 / 256;
+		
+		uships = [...Array(10)].map((o, i) => {
+			var ushipMaterial = new THREE.SpriteMaterial( { map: ushipTexture } );
+			var sprite2 = new THREE.Sprite( ushipMaterial );
+			sprite2.position.set( -200, 50, 0 );
+			sprite2.scale.set( 64, 64, 1.0 ); // imageWidth, imageHeight
+			scene.add( sprite2 );
+			return sprite2;
+		});
+
+		/*
+			var crateMaterial = new THREE.SpriteMaterial( { map: crateTexture } );
+			var sprite2 = new THREE.Sprite( crateMaterial );
+			sprite2.position.set( -0, 50, 0 );
+			sprite2.scale.set( 64, 64, 1.0 ); // imageWidth, imageHeight
+			scene.add( sprite2 );
+			return sprite2;
+			*/		
 		// Temporary sprite to debug animation glitch
 		/*
 		var crateTexture2 = loader.load(enemyImageURL);
@@ -144,7 +174,7 @@ const main2 = () => {
 		//enemySprite.position.y++;
 		
 		//enemySprite.position.z += delta * 100;
-		pathPosition = (pathPosition + delta) % 1;
+		pathPosition = (pathPosition + delta * 0.5) % 1;
 		
 		enemies.forEach((enemy, i) => {
 			const position = (pathPosition + i / enemies.length) % 1;
@@ -154,13 +184,19 @@ const main2 = () => {
 			enemy.position.z = point.y;
 		});
 		
-		
+		uships.forEach((enemy, i) => {
+			const position = (pathPosition + i / uships.length) % 1;
+			const point = enemyPath.getPointAt(position);
+			enemy.position.x = -point.x;
+			enemy.position.y = 50 + position * 20;
+			enemy.position.z = point.y;
+		});
+				
 		enemyFrame = (enemyFrame + delta * 16) % 8;
 		
 		//enemyTexture.repeat.set( 1 / (256/24), 1 / (256/24) );
-		enemyTexture.repeat.set( 1 / (256/24), 1 / (256/24) );
 		enemyTexture.offset.x = Math.floor(enemyFrame) * (24 / 256);
-		enemyTexture.offset.y = 64 / 256;
+		ushipTexture.offset.x = Math.floor(enemyFrame) * (24 / 256);
 	}
 	
 	function render() 
