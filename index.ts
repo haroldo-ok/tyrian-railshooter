@@ -60,6 +60,7 @@ const main2 = () => {
 		
 		var floorTexture2 = loader.load(enemyImageURL);
 		animators.push(makeTextureAnimator(floorTexture2, {textureY: 64}));
+		floorTexture2.repeat.set(1, 1);
 
 		
 		var floorMaterial = new THREE.MeshBasicMaterial( { map: floorTexture, side: THREE.DoubleSide } );
@@ -67,11 +68,17 @@ const main2 = () => {
 		
 		var floorGeometry = new THREE.PlaneGeometry(1000, 1000, 10, 10);		
 		floorGeometry.faces.forEach((m, i) => m.materialIndex = (Math.floor(i / 2) + Math.floor(i / 20)) % 2);
-		/*
-		floorGeometry.faces[0].materialIndex = 1;
-		floorGeometry.faces[11].materialIndex = 1;
-		floorGeometry.faces[22].materialIndex = 1;
-		*/
+		window.floorGeometry = floorGeometry;
+		
+		//floorGeometry.faceVertexUvs.forEach(layer => layer.forEach(face => face.forEach(vertice => vertice.x = 0)))
+		//floorGeometry.uvsNeedUpdate = true
+		floorGeometry.faceVertexUvs.forEach(layer => layer.forEach((face, i) => {
+			const base = layer[i % 2];
+			face.forEach((vertice, j) => {
+				vertice.x = base[j].x;
+				//vertice.y = base[j].y;
+			});
+		}))
 		
 		var floor = new THREE.Mesh(floorGeometry, [floorMaterial, floorMaterial2]);
 		floor.position.y = -0.5;
