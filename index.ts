@@ -80,41 +80,34 @@ const main2 = () => {
 		animators.push(makeTextureAnimator(crateTexture, {textureY: 64}));
 		enemyTexture = crateTexture;
 
-		var crateMaterial = new THREE.SpriteMaterial( { map: crateTexture, color: 0xff0000 } );
-		var sprite2 = new THREE.Sprite( crateMaterial );
-		sprite2.position.set( -100, 50, 0 );
-		sprite2.scale.set( 64, 64, 1.0 ); // imageWidth, imageHeight
-		scene.add( sprite2 );
+		var sprite2 = createSprite(crateTexture);
+		sprite2.material.color.set('#F00')
+		sprite2.position.set(-100, 50, 0);
+		scene.add(sprite2);
 
 		enemies = createArrayOfSize(5).map((o, i) => {
-			var crateMaterial = new THREE.SpriteMaterial( { map: crateTexture } );
-			var sprite2 = new THREE.Sprite( crateMaterial );
-			sprite2.position.set( -0, 50, 0 );
-			sprite2.scale.set( 64, 64, 1.0 ); // imageWidth, imageHeight
-			scene.add( sprite2 );
-			return sprite2;
+			const sprite = createSprite(crateTexture);
+			sprite.position.set(-0, 50, 0);
+			scene.add(sprite);
+			return sprite;
 		});
 		enemySprite = enemies[0];
 
 
-		var crateMaterial = new THREE.SpriteMaterial( { map: crateTexture, color: 0x0000ff } );
-		var sprite2 = new THREE.Sprite( crateMaterial );
-		sprite2.position.set( 100, 50, 0 );
-		sprite2.scale.set( 64, 64, 1.0 ); // imageWidth, imageHeight
-		scene.add( sprite2 );
-
+		var sprite2 = createSprite(crateTexture);
+		sprite2.material.color.set('#00F')
+		sprite2.position.set(100, 50, 0);
+		scene.add(sprite2);
 		
 
 		ushipTexture = loader.load(enemyImageURL);
 		animators.push(makeTextureAnimator(ushipTexture, {textureY: 92}));
 		
 		uships = createArrayOfSize(5).map((o, i) => {
-			var ushipMaterial = new THREE.SpriteMaterial( { map: ushipTexture } );
-			var sprite2 = new THREE.Sprite( ushipMaterial );
-			sprite2.position.set( -200, 50, 0 );
-			sprite2.scale.set( 64, 64, 1.0 ); // imageWidth, imageHeight
-			scene.add( sprite2 );
-			return sprite2;
+			const sprite = createSprite(ushipTexture);
+			sprite.position.set(-200, 50, 0);
+			scene.add(sprite);
+			return sprite;
 		});
 
 		
@@ -219,6 +212,13 @@ function makeTextureAnimator(texture, {
 		texture.offset.x = time.x * ratio.x + offset.x;
 		texture.offset.y = time.y * ratio.y + offset.y;
 	};
+}
+
+function createSprite(texture, {width = 64, height = 64} = {}) {
+	var material = new THREE.SpriteMaterial({ map: texture });	
+	var sprite = new THREE.Sprite(material);
+	sprite.scale.set( width, height, 1.0 );
+	return sprite
 }
 
 const createArrayOfSize = size => [...Array(size)];
