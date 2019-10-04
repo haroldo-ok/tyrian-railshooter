@@ -58,9 +58,22 @@ const main2 = () => {
 		floorTexture.wrapS = floorTexture.wrapT = THREE.RepeatWrapping; 
 		floorTexture.repeat.set( 10, 10 );
 		
+		var floorTexture2 = loader.load(enemyImageURL);
+		animators.push(makeTextureAnimator(floorTexture2, {textureY: 64}));
+
+		
 		var floorMaterial = new THREE.MeshBasicMaterial( { map: floorTexture, side: THREE.DoubleSide } );
-		var floorGeometry = new THREE.PlaneGeometry(1000, 1000, 10, 10);
-		var floor = new THREE.Mesh(floorGeometry, floorMaterial);
+		var floorMaterial2 = new THREE.MeshBasicMaterial( { map: floorTexture2, side: THREE.DoubleSide } );
+		
+		var floorGeometry = new THREE.PlaneGeometry(1000, 1000, 10, 10);		
+		floorGeometry.faces.forEach((m, i) => m.materialIndex = (Math.floor(i / 2) + Math.floor(i / 20)) % 2);
+		/*
+		floorGeometry.faces[0].materialIndex = 1;
+		floorGeometry.faces[11].materialIndex = 1;
+		floorGeometry.faces[22].materialIndex = 1;
+		*/
+		
+		var floor = new THREE.Mesh(floorGeometry, [floorMaterial, floorMaterial2]);
 		floor.position.y = -0.5;
 		floor.rotation.x = Math.PI / 2;
 		scene.add(floor);
