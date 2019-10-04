@@ -17,6 +17,8 @@ let pathPosition = 0;
 let enemies;
 let uships;
 
+const animators = [];
+
 const main2 = () => {
 	// standard global variables
 	var container, scene, camera, renderer, controls, stats;
@@ -75,10 +77,7 @@ const main2 = () => {
 
 
 		var crateTexture = loader.load(enemyImageURL);
-		crateTexture.magFilter = THREE.NearestFilter;
-		crateTexture.minFilter = THREE.NearestMipMapLinearFilter;
-		crateTexture.repeat.set( 1 / (256/24), 1 / (256/24) );
-		crateTexture.offset.y = 64 / 256;
+		animators.push(makeTextureAnimator(crateTexture, {textureY: 64}));
 		enemyTexture = crateTexture;
 
 		var crateMaterial = new THREE.SpriteMaterial( { map: crateTexture, color: 0xff0000 } );
@@ -107,10 +106,7 @@ const main2 = () => {
 		
 
 		ushipTexture = loader.load(enemyImageURL);
-		ushipTexture.magFilter = THREE.NearestFilter;
-		ushipTexture.minFilter = THREE.NearestMipMapLinearFilter;
-		ushipTexture.repeat.set( 1 / (256/24), 1 / (256/24) );
-		ushipTexture.offset.y = 92 / 256;
+		animators.push(makeTextureAnimator(ushipTexture, {textureY: 92}));
 		
 		uships = [...Array(10)].map((o, i) => {
 			var ushipMaterial = new THREE.SpriteMaterial( { map: ushipTexture } );
@@ -121,29 +117,6 @@ const main2 = () => {
 			return sprite2;
 		});
 
-		/*
-			var crateMaterial = new THREE.SpriteMaterial( { map: crateTexture } );
-			var sprite2 = new THREE.Sprite( crateMaterial );
-			sprite2.position.set( -0, 50, 0 );
-			sprite2.scale.set( 64, 64, 1.0 ); // imageWidth, imageHeight
-			scene.add( sprite2 );
-			return sprite2;
-			*/		
-		// Temporary sprite to debug animation glitch
-		/*
-		var crateTexture2 = loader.load(enemyImageURL);
-		crateTexture2.magFilter = THREE.NearestFilter;
-		crateTexture2.minFilter = THREE.NearestMipMapLinearFilter;
-		crateTexture2.repeat.set( 1 / (256/24), 1 / (256/24) );
-		crateTexture2.offset.x = Math.floor(enemyFrame) * (24 / 256);
-		crateTexture2.offset.y = 64 / 256;
-		
-		var crateMaterial = new THREE.SpriteMaterial( { map: crateTexture2, useScreenCoordinates: false, color: 0x00ff00 } );
-		var sprite2 = new THREE.Sprite( crateMaterial );
-		sprite2.position.set( 100, 50, 0 );
-		sprite2.scale.set( 64, 64, 1.0 ); // imageWidth, imageHeight
-		scene.add( sprite2 );
-		*/
 		
 		// Path to follow
 		const path = new THREE.Path([
@@ -191,12 +164,9 @@ const main2 = () => {
 			enemy.position.y = 50 + position * 20;
 			enemy.position.z = point.y;
 		});
-				
-		enemyFrame = (enemyFrame + delta * 16) % 8;
-		
-		//enemyTexture.repeat.set( 1 / (256/24), 1 / (256/24) );
-		enemyTexture.offset.x = Math.floor(enemyFrame) * (24 / 256);
-		ushipTexture.offset.x = Math.floor(enemyFrame) * (24 / 256);
+
+		// Call animators to animate the textures
+		animators.forEach(f => f(delta));
 	}
 	
 	function render() 
@@ -204,6 +174,51 @@ const main2 = () => {
 		renderer.render( scene, camera );
 	}
 
+}
+
+function makeTextureAnimator(texture, {
+	spriteWidth = 24, spriteHeight = 24,
+	textureWidth = 256, textureHeight = 256,
+	textureX = 0, textureY = 0,
+	framesX = 8, framesY = 1,
+	speed = 16
+} = {}) {
+	const ratio = {
+		x: 1 / (textureWidth / spriteWidth),
+		y: 1 / (textureHeight / spriteHeight)
+	};
+	
+	const offset = {
+		x: textureX / 256,
+		y: textureY / 256
+	};
+	
+	// Initializes the texture
+	
+	texture.magFilter = THREE.NearestFilter;
+	texture.minFilter = THREE.NearestMipMapLinearFilter;
+	texture.repeat.set(ratio.x, ratio.y);
+	
+	texture.offset.x = offset.x;
+	texture.offset.y = offset.y;
+	
+	// Creates the texture update function
+	
+	const frameCount = framesX * framesY;
+	let frameTime = 0;
+	
+	return timeDelta => {
+		frameTime = (frameTime + timeDelta * speed) % frameCount;
+		
+		const integerTime = Math.floor(frameTime);
+		const time = {
+			x: Math.floor(integerTime % framesX),
+			y: Math.floor(integerTime / framesX)
+		};
+		
+		texture.offset.x = time.x * ratio.x + offset.x;
+		texture.offset.y = time.y * ratio.y + offset.y;
+	};
 }
 
 main2();
