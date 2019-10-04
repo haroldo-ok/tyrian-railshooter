@@ -86,7 +86,7 @@ const main2 = () => {
 		sprite2.scale.set( 64, 64, 1.0 ); // imageWidth, imageHeight
 		scene.add( sprite2 );
 
-		enemies = [...Array(10)].map((o, i) => {
+		enemies = createArrayOfSize(5).map((o, i) => {
 			var crateMaterial = new THREE.SpriteMaterial( { map: crateTexture } );
 			var sprite2 = new THREE.Sprite( crateMaterial );
 			sprite2.position.set( -0, 50, 0 );
@@ -108,7 +108,7 @@ const main2 = () => {
 		ushipTexture = loader.load(enemyImageURL);
 		animators.push(makeTextureAnimator(ushipTexture, {textureY: 92}));
 		
-		uships = [...Array(10)].map((o, i) => {
+		uships = createArrayOfSize(5).map((o, i) => {
 			var ushipMaterial = new THREE.SpriteMaterial( { map: ushipTexture } );
 			var sprite2 = new THREE.Sprite( ushipMaterial );
 			sprite2.position.set( -200, 50, 0 );
@@ -220,5 +220,7 @@ function makeTextureAnimator(texture, {
 		texture.offset.y = time.y * ratio.y + offset.y;
 	};
 }
+
+const createArrayOfSize = size => [...Array(size)];
 
 main2();
