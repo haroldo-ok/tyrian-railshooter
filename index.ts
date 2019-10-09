@@ -66,12 +66,13 @@ const main2 = () => {
 		var floorMaterial = new THREE.MeshBasicMaterial( { map: floorTexture, side: THREE.DoubleSide } );
 		var floorMaterial2 = new THREE.MeshBasicMaterial( { map: floorTexture2, side: THREE.DoubleSide } );
 		
-		var floorGeometry = new THREE.PlaneGeometry(1000, 1000, 10, 10);		
-		floorGeometry.faces.forEach((m, i) => m.materialIndex = (Math.floor(i / 2) + Math.floor(i / 20)) % 2);
+		var floorGeometry = new THREE.PlaneGeometry(1000, 1000, 1, 1);		
+		//floorGeometry.faces.forEach((m, i) => m.materialIndex = (Math.floor(i / 2) + 1 + Math.floor(i / 20)) % 2);
 		window.floorGeometry = floorGeometry;
 		
 		//floorGeometry.faceVertexUvs.forEach(layer => layer.forEach(face => face.forEach(vertice => vertice.x = 0)))
 		//floorGeometry.uvsNeedUpdate = true
+		/*
 		floorGeometry.faceVertexUvs.forEach(layer => layer.forEach((face, i) => {
 			const base = layer[i % 2];
 			face.forEach((vertice, j) => {
@@ -79,8 +80,19 @@ const main2 = () => {
 				//vertice.y = base[j].y;
 			});
 		}))
+		*/
+		var floorScale = 24/256;
+		floorGeometry.faceVertexUvs.forEach(layer => layer.forEach((face, i) => {
+			face.forEach((vertice, j) => {
+				vertice.x *= floorScale;
+				vertice.y *= floorScale;
+			});
+		}));
 		
-		var floor = new THREE.Mesh(floorGeometry, [floorMaterial, floorMaterial2]);
+		
+		//var floor = new THREE.Mesh(floorGeometry, [floorMaterial, floorMaterial2]);
+		var floor = new THREE.Mesh(floorGeometry, floorMaterial2);
+		//floor.position.x = -100;
 		floor.position.y = -0.5;
 		floor.rotation.x = Math.PI / 2;
 		scene.add(floor);
