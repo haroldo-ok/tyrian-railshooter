@@ -64,11 +64,29 @@ const main2 = () => {
 		floorTexture2.repeat.set(1, 1);
 
 		
-		var floorMaterial = new THREE.MeshBasicMaterial( { map: floorTexture, side: THREE.DoubleSide } );
-		var floorMaterial2 = new THREE.MeshBasicMaterial( { map: floorTexture2, side: THREE.DoubleSide } );
+		var floorMaterial = new THREE.MeshBasicMaterial( { map: floorTexture, side: THREE.DoubleSide, transparent: true } );
+		var floorMaterial2 = new THREE.MeshBasicMaterial( { map: floorTexture2, side: THREE.DoubleSide, transparent: true } );
+		
+		const tileWidth = 24;
+		const tileHeight = 28;
+		const tileCountX = Math.floor(256 / tileWidth);
+		const tileCountY = Math.floor(256 / tileHeight);
+		const tileCount = tileCountX * tileCountY;
+		const floorMaterials = createArrayOfSize(tileCount).map((o, i) => {
+			const tileX = i % tileCountX;
+			const tileY = Math.floor(i / tileCountX);
+			const textureX = tileX * tileWidth;
+			const textureY = 256 - tileY * tileHeight;
+
+			var texture = loader.load(floorImageURL);
+			animators.push(makeTextureAnimator(texture, {textureX, textureY, framesX: 1}));
+			texture.repeat.set(1, 1);
+			
+			return new THREE.MeshBasicMaterial( { map: texture, side: THREE.DoubleSide, transparent: true } );
+		});
 		
 		var floorGeometry = new THREE.PlaneGeometry(1000, 110, 10, 1);		
-		//floorGeometry.faces.forEach((m, i) => m.materialIndex = (Math.floor(i / 2) + 1 + Math.floor(i / 20)) % 2);
+		floorGeometry.faces.forEach((m, i) => m.materialIndex = i % tileCount);
 		window.floorGeometry = floorGeometry;
 		
 		//floorGeometry.faceVertexUvs.forEach(layer => layer.forEach(face => face.forEach(vertice => vertice.x = 0)))
@@ -92,7 +110,7 @@ const main2 = () => {
 			});
 		}));
 		*/
-		var floorScale = 24/256;
+		const floorScale = 24/256;
 		floorGeometry.faceVertexUvs.forEach(layer => layer.forEach((face, i) => {
 			const base = layer[i % 2];
 			if (i % 2) {
@@ -114,7 +132,7 @@ const main2 = () => {
 		
 		
 		//var floor = new THREE.Mesh(floorGeometry, [floorMaterial, floorMaterial2]);
-		var floor = new THREE.Mesh(floorGeometry, floorMaterial2);
+		var floor = new THREE.Mesh(floorGeometry, floorMaterials);
 		//floor.position.x = -100;
 		floor.position.y = -0.5;
 		floor.rotation.x = Math.PI / 2;
