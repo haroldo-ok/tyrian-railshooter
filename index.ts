@@ -4,6 +4,7 @@ import * as THREE from 'three';
 
 import imageURL from './desert.png';
 import enemyImageURL from './NEWSH2.SHP.png';
+import floorImageURL from './SHAPESZ.DAT.1.png';
 
 let floorTexture;
 let enemySprite;
@@ -58,15 +59,15 @@ const main2 = () => {
 		floorTexture.wrapS = floorTexture.wrapT = THREE.RepeatWrapping; 
 		floorTexture.repeat.set( 10, 10 );
 		
-		var floorTexture2 = loader.load(enemyImageURL);
-		animators.push(makeTextureAnimator(floorTexture2, {textureY: 64}));
+		var floorTexture2 = loader.load(floorImageURL);
+		animators.push(makeTextureAnimator(floorTexture2, {textureY: 256 - 2 * 28, framesX: 1}));
 		floorTexture2.repeat.set(1, 1);
 
 		
 		var floorMaterial = new THREE.MeshBasicMaterial( { map: floorTexture, side: THREE.DoubleSide } );
 		var floorMaterial2 = new THREE.MeshBasicMaterial( { map: floorTexture2, side: THREE.DoubleSide } );
 		
-		var floorGeometry = new THREE.PlaneGeometry(1000, 100, 10, 1);		
+		var floorGeometry = new THREE.PlaneGeometry(1000, 110, 10, 1);		
 		//floorGeometry.faces.forEach((m, i) => m.materialIndex = (Math.floor(i / 2) + 1 + Math.floor(i / 20)) % 2);
 		window.floorGeometry = floorGeometry;
 		
