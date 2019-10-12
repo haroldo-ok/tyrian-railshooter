@@ -76,7 +76,12 @@ const main2 = () => {
 			const tileX = i % tileCountX;
 			const tileY = Math.floor(i / tileCountX);
 			const textureX = tileX * tileWidth;
-			const textureY = 256 - tileY * tileHeight;
+			const textureY = 256 - (tileY + 1) * tileHeight;
+
+			/*
+			const textureX = 0;
+			const textureY = 256 - tileHeight
+			*/
 
 			var texture = loader.load(floorImageURL);
 			animators.push(makeTextureAnimator(texture, {textureX, textureY, framesX: 1}));
@@ -86,7 +91,7 @@ const main2 = () => {
 		});
 		
 		var floorGeometry = new THREE.PlaneGeometry(1000, 110, 10, 1);		
-		floorGeometry.faces.forEach((m, i) => m.materialIndex = i % tileCount);
+		floorGeometry.faces.forEach((m, i) => m.materialIndex = Math.floor(i/2) % tileCount);
 		window.floorGeometry = floorGeometry;
 		
 		//floorGeometry.faceVertexUvs.forEach(layer => layer.forEach(face => face.forEach(vertice => vertice.x = 0)))
