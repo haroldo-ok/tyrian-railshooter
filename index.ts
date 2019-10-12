@@ -155,7 +155,7 @@ const main2 = () => {
 		
 
 		ushipTexture = loader.load(enemyImageURL);
-		animators.push(makeTextureAnimator(ushipTexture, {textureY: 92}));
+		animators.push(makeTextureAnimator(ushipTexture, {textureY: 256 - 6 * 28}));
 		
 		uships = createArrayOfSize(5).map((o, i) => {
 			const sprite = createSprite(ushipTexture);
@@ -224,7 +224,7 @@ const main2 = () => {
 }
 
 function makeTextureAnimator(texture, {
-	spriteWidth = 24, spriteHeight = 24,
+	spriteWidth = 24, spriteHeight = 28,
 	textureWidth = 256, textureHeight = 256,
 	textureX = 0, textureY = 0,
 	framesX = 8, framesY = 1,
