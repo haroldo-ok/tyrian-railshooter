@@ -1,6 +1,7 @@
 'use strict';
 
 import * as THREE from 'three';
+import {sample} from 'lodash';
 
 import imageURL from './desert.png';
 import enemyImageURL from './NEWSH2.SHP.png';
@@ -91,7 +92,15 @@ const main2 = () => {
 		});
 		
 		var floorGeometry = new THREE.PlaneGeometry(1000, 110, 10, 1);		
-		floorGeometry.faces.forEach((m, i) => m.materialIndex = Math.floor(i/2) % tileCount);
+		//floorGeometry.faces.forEach((m, i) => m.materialIndex = Math.floor(i/2) % tileCount);
+		const floorTiles = [50, 51, 60, 61,62, 63];
+		floorGeometry.faces.reduce((o, m, i) => {
+			if (i & 1) {
+				o = sample(floorTiles);
+			}
+			m.materialIndex = o;
+			return o;
+		});
 		window.floorGeometry = floorGeometry;
 		
 		//floorGeometry.faceVertexUvs.forEach(layer => layer.forEach(face => face.forEach(vertice => vertice.x = 0)))
