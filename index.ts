@@ -90,17 +90,11 @@ const main2 = () => {
 			
 			return new THREE.MeshBasicMaterial( { map: texture, side: THREE.DoubleSide, transparent: true } );
 		});
-		
-		var floorGeometry = new THREE.PlaneGeometry(1000, 110, 10, 1);		
+						
+		var floorGeometry = createFloorStripGeometry();
 		//floorGeometry.faces.forEach((m, i) => m.materialIndex = Math.floor(i/2) % tileCount);
 		const floorTiles = [50, 51, 60, 61,62, 63];
-		floorGeometry.faces.reduce((o, m, i) => {
-			if (i & 1) {
-				o = sample(floorTiles);
-			}
-			m.materialIndex = o;
-			return o;
-		});
+		updateFloorTileIndexes(floorGeometry, createArrayOfSize(floorGeometry.faces.length / 2).map(() => sample(floorTiles)));
 		window.floorGeometry = floorGeometry;
 		
 		//floorGeometry.faceVertexUvs.forEach(layer => layer.forEach(face => face.forEach(vertice => vertice.x = 0)))
@@ -124,6 +118,7 @@ const main2 = () => {
 			});
 		}));
 		*/
+		/*
 		const floorScale = 24/256;
 		floorGeometry.faceVertexUvs.forEach(layer => layer.forEach((face, i) => {
 			const base = layer[i % 2];
@@ -143,6 +138,7 @@ const main2 = () => {
 				face[2].y = 0;
 			}
 		}))
+		*/
 		
 		
 		//var floor = new THREE.Mesh(floorGeometry, [floorMaterial, floorMaterial2]);
@@ -255,6 +251,36 @@ const main2 = () => {
 	}
 
 }
+
+const updateFloorTileIndexes = (geometry, tileNumbers) {
+	geometry.faces.forEach((m, i) => m.materialIndex = tileNumbers[i >> 1]);
+};
+
+const createFloorStripGeometry = () => {
+	const geometry = new THREE.PlaneGeometry(1000, 110, 10, 1);		
+
+	const floorScale = 24/256;
+	geometry.faceVertexUvs.forEach(layer => layer.forEach((face, i) => {
+		const base = layer[i % 2];
+		if (i % 2) {
+			face[0].x = 0;
+			face[0].y = floorScale;
+			face[1].x = floorScale;
+			face[1].y = floorScale;
+			face[2].x = floorScale;
+			face[2].y = 0;	
+		} else {
+			face[0].x = 0;
+			face[0].y = 0;			
+			face[1].x = 0;
+			face[1].y = floorScale;
+			face[2].x = floorScale;
+			face[2].y = 0;
+		}
+	}));
+
+	return geometry;
+};
 
 function makeTextureAnimator(texture, {
 	spriteWidth = 24, spriteHeight = 28,
