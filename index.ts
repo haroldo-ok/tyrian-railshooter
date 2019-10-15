@@ -79,11 +79,6 @@ const main2 = () => {
 			const textureX = tileX * tileWidth;
 			const textureY = 256 - (tileY + 1) * tileHeight;
 
-			/*
-			const textureX = 0;
-			const textureY = 256 - tileHeight
-			*/
-
 			var texture = loader.load(floorImageURL);
 			animators.push(makeTextureAnimator(texture, {textureX, textureY, framesX: 1}));
 			texture.repeat.set(1, 1);
@@ -92,58 +87,12 @@ const main2 = () => {
 		});
 						
 		var floorGeometry = createFloorStripGeometry();
-		//floorGeometry.faces.forEach((m, i) => m.materialIndex = Math.floor(i/2) % tileCount);
 		const floorTiles = [50, 51, 60, 61,62, 63];
 		updateFloorTileIndexes(floorGeometry, createArrayOfSize(floorGeometry.faces.length / 2).map(() => sample(floorTiles)));
 		window.floorGeometry = floorGeometry;
 		
-		//floorGeometry.faceVertexUvs.forEach(layer => layer.forEach(face => face.forEach(vertice => vertice.x = 0)))
-		//floorGeometry.uvsNeedUpdate = true
-		/*
-		floorGeometry.faceVertexUvs.forEach(layer => layer.forEach((face, i) => {
-			const base = layer[i % 2];
-			face.forEach((vertice, j) => {
-				vertice.x = base[j].x * 0.95;
-				//vertice.y = base[j].y;
-				vertice.y *= 24/256;
-			});
-		}))
-		*/
-		/*
-		var floorScale = 24/256;
-		floorGeometry.faceVertexUvs.forEach(layer => layer.forEach((face, i) => {
-			face.forEach((vertice, j) => {
-				vertice.x *= floorScale;
-				vertice.y *= floorScale;
-			});
-		}));
-		*/
-		/*
-		const floorScale = 24/256;
-		floorGeometry.faceVertexUvs.forEach(layer => layer.forEach((face, i) => {
-			const base = layer[i % 2];
-			if (i % 2) {
-				face[0].x = 0;
-				face[0].y = floorScale;
-				face[1].x = floorScale;
-				face[1].y = floorScale;
-				face[2].x = floorScale;
-				face[2].y = 0;	
-			} else {
-				face[0].x = 0;
-				face[0].y = 0;			
-				face[1].x = 0;
-				face[1].y = floorScale;
-				face[2].x = floorScale;
-				face[2].y = 0;
-			}
-		}))
-		*/
 		
-		
-		//var floor = new THREE.Mesh(floorGeometry, [floorMaterial, floorMaterial2]);
 		var floor = new THREE.Mesh(floorGeometry, floorMaterials);
-		//floor.position.x = -100;
 		floor.position.y = -0.5;
 		floor.rotation.x = Math.PI / 2;
 		scene.add(floor);
@@ -217,12 +166,6 @@ const main2 = () => {
 	{
 		const delta = clock.getDelta();
 		
-		floorTexture.offset.y -= delta * 6;
-		//enemyTexture.offset.x += 0.001;
-		//enemySprite.position.x++;
-		//enemySprite.position.y++;
-		
-		//enemySprite.position.z += delta * 100;
 		pathPosition = (pathPosition + delta * 0.5) % 1;
 		
 		enemies.forEach((enemy, i) => {
