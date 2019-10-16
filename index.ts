@@ -88,7 +88,7 @@ const main2 = () => {
 						
         const floorContainer = new THREE.Object3D();
 
-        createArrayOfSize(10).forEach((o, i) => {
+        const floorStrips = createArrayOfSize(10).map((o, i) => {
             var floorGeometry = createFloorStripGeometry();
             const floorTiles = [50, 51, 60, 61,62, 63];
             updateFloorTileIndexes(floorGeometry, createArrayOfSize(floorGeometry.faces.length / 2).map(() => sample(floorTiles)));
@@ -97,10 +97,21 @@ const main2 = () => {
 
             var floor = new THREE.Mesh(floorGeometry, floorMaterials);
             floor.position.y = -0.5;
-            floor.position.z = (i - 5) * 110;
+            floor.position.z = (5 - i) * 110;
             floor.rotation.x = Math.PI / 2;            
             
             floorContainer.add(floor);
+            
+            return floor;
+        });
+        
+        animators.push(delta => {
+            floorStrips.forEach(strip => {
+                strip.position.z += delta * 100;
+                while (strip.position.z > 5 * 110) {
+                    strip.position.z -= 10 * 110;
+                }
+            });
         });
                 
 		scene.add(floorContainer);
