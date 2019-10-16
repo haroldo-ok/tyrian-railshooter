@@ -86,16 +86,25 @@ const main2 = () => {
 			return new THREE.MeshBasicMaterial( { map: texture, side: THREE.DoubleSide, transparent: true } );
 		});
 						
-		var floorGeometry = createFloorStripGeometry();
-		const floorTiles = [50, 51, 60, 61,62, 63];
-		updateFloorTileIndexes(floorGeometry, createArrayOfSize(floorGeometry.faces.length / 2).map(() => sample(floorTiles)));
-		window.floorGeometry = floorGeometry;
-		
-		
-		var floor = new THREE.Mesh(floorGeometry, floorMaterials);
-		floor.position.y = -0.5;
-		floor.rotation.x = Math.PI / 2;
-		scene.add(floor);
+        const floorContainer = new THREE.Object3D();
+
+        createArrayOfSize(10).forEach((o, i) => {
+            var floorGeometry = createFloorStripGeometry();
+            const floorTiles = [50, 51, 60, 61,62, 63];
+            updateFloorTileIndexes(floorGeometry, createArrayOfSize(floorGeometry.faces.length / 2).map(() => sample(floorTiles)));
+            window['floorGeometry'] = floorGeometry;
+
+
+            var floor = new THREE.Mesh(floorGeometry, floorMaterials);
+            floor.position.y = -0.5;
+            floor.position.z = (i - 5) * 110;
+            floor.rotation.x = Math.PI / 2;            
+            
+            floorContainer.add(floor);
+        });
+                
+		scene.add(floorContainer);
+        
 		// SKYBOX/FOG
 		var skyBoxGeometry = new THREE.CubeGeometry( 10000, 10000, 10000 );
 		var skyBoxMaterial = new THREE.MeshBasicMaterial( { color: 0x9999ff, side: THREE.BackSide } );
@@ -195,7 +204,7 @@ const main2 = () => {
 
 }
 
-const updateFloorTileIndexes = (geometry, tileNumbers) {
+const updateFloorTileIndexes = (geometry, tileNumbers) => {
 	geometry.faces.forEach((m, i) => m.materialIndex = tileNumbers[i >> 1]);
 };
 
