@@ -94,9 +94,10 @@ const main2 = () => {
         const floorStrips = createArrayOfSize(10).map((o, i) => {
             var floorGeometry = createFloorStripGeometry();
             const floorTiles = [50, 51, 60, 61,62, 63];
+            const floorTiles2 = [16, 46];
             //updateFloorTileIndexes(floorGeometry, createArrayOfSize(floorGeometry.faces.length / 2).map(() => sample(floorTiles)));
 			updateFloorTileIndexes(floorGeometry, createArrayOfSize(floorGeometry.faces.length / 2)
-								   .map((o2, j) => floorTiles[Math.floor((simplex.noise2D(i, j) + 1) * floorTiles.length * 0.5)]));
+								   .map((o2, j) => simplex.noise2D(i, j) > 0 ? sample(floorTiles) : sample(floorTiles2)));
             window['floorGeometry'] = floorGeometry;
 
 
