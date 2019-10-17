@@ -90,14 +90,23 @@ const main2 = () => {
         const floorContainer = new THREE.Object3D();
         
         const simplex = new SimplexNoise();
+		
+		const step1Tiles = [];
+		const floorTiles = [50, 51, 60, 61,62, 63];
+		const floorTiles2 = [16, 46];
+		const generateTileIndexes = (tileCount = 10) => {
+			const position = step1Tiles.length;
+			const indexes = createArrayOfSize(tileCount)
+								   .map((o2, j) => simplex.noise2D(position, j) > 0 ? sample(floorTiles) : sample(floorTiles2));
+			step1Tiles.push(indexes);
+			
+			return indexes;
+		};
 
         const floorStrips = createArrayOfSize(10).map((o, i) => {
             var floorGeometry = createFloorStripGeometry();
-            const floorTiles = [50, 51, 60, 61,62, 63];
-            const floorTiles2 = [16, 46];
             //updateFloorTileIndexes(floorGeometry, createArrayOfSize(floorGeometry.faces.length / 2).map(() => sample(floorTiles)));
-			updateFloorTileIndexes(floorGeometry, createArrayOfSize(floorGeometry.faces.length / 2)
-								   .map((o2, j) => simplex.noise2D(i, j) > 0 ? sample(floorTiles) : sample(floorTiles2)));
+			updateFloorTileIndexes(floorGeometry, generateTileIndexes());
             window['floorGeometry'] = floorGeometry;
 
 
@@ -114,8 +123,9 @@ const main2 = () => {
         animators.push(delta => {
             floorStrips.forEach(strip => {
                 strip.position.z += delta * 100;
-                while (strip.position.z > 5 * 110) {
+                if (strip.position.z > 5 * 110) {
                     strip.position.z -= 10 * 110;
+					updateFloorTileIndexes(floorGeometry, generateTileIndexes());
                 }
             });
         });
