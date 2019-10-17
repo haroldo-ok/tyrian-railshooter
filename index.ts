@@ -2,6 +2,7 @@
 
 import * as THREE from 'three';
 import {sample} from 'lodash';
+import SimplexNoise from 'simplex-noise';
 
 import imageURL from './desert.png';
 import enemyImageURL from './NEWSH2.SHP.png';
@@ -87,11 +88,15 @@ const main2 = () => {
 		});
 						
         const floorContainer = new THREE.Object3D();
+        
+        const simplex = new SimplexNoise();
 
         const floorStrips = createArrayOfSize(10).map((o, i) => {
             var floorGeometry = createFloorStripGeometry();
             const floorTiles = [50, 51, 60, 61,62, 63];
-            updateFloorTileIndexes(floorGeometry, createArrayOfSize(floorGeometry.faces.length / 2).map(() => sample(floorTiles)));
+            //updateFloorTileIndexes(floorGeometry, createArrayOfSize(floorGeometry.faces.length / 2).map(() => sample(floorTiles)));
+			updateFloorTileIndexes(floorGeometry, createArrayOfSize(floorGeometry.faces.length / 2)
+								   .map((o2, j) => floorTiles[Math.floor((simplex.noise2D(i, j) + 1) * floorTiles.length * 0.5)]));
             window['floorGeometry'] = floorGeometry;
 
 

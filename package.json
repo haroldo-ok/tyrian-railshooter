@@ -15,6 +15,7 @@
     "typescript": "^3.6.3"
   },
   "dependencies": {
+    "simplex-noise": "^2.4.0",
     "three": "^0.108.0"
   }
 }
