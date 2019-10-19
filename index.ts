@@ -4,6 +4,8 @@ import * as THREE from 'three';
 import {sample} from 'lodash';
 import SimplexNoise from 'simplex-noise';
 
+import {mapGenerator} from './map-generator';
+
 import imageURL from './desert.png';
 import enemyImageURL from './NEWSH2.SHP.png';
 import floorImageURL from './SHAPESZ.DAT.1.png';
@@ -89,8 +91,7 @@ const main2 = () => {
 						
         const floorContainer = new THREE.Object3D();
         
-        const simplex = new SimplexNoise();
-		
+		/*
 		const step1Tiles = [];
 		const floorTiles = [50, 51, 60, 61,62, 63];
 		const floorTiles2 = [16, 46];
@@ -165,6 +166,10 @@ const main2 = () => {
 		for (let i = 0; i != 3; i++) {			
 			generateTileIndexesStep1();
 		}
+		
+		*/
+		
+		const generateTileIndexes = mapGenerator();
 
         const floorStrips = createArrayOfSize(10).map((o, i) => {
             var floorGeometry = createFloorStripGeometry();
