@@ -5,15 +5,60 @@ import SimplexNoise from 'simplex-noise';
 
 const simplex = new SimplexNoise();
 
-const floorTiles = [50, 51, 60, 61,62, 63];
-const floorTiles2 = [16, 46];
-
-const generateTileIndexesStep1 = (position, {tileCount = 10} = {}) => {
-	return range(tileCount).map((j) => simplex.noise2D(position, j) > 0.5 ? 1 : 0;
+enum TileEdge {
+	A, B, L, R
 };
+
+const tileEdgeNames = (() => {
+	const names = [];
+	for (let item in TileEdge) {
+		if (isNaN(Number(item))) {
+			names.push(item.toLowerCase());
+		}
+	}
+	return names;
+})();
+console.log(tileEdgeNames);
+
+const tileIndexes = {
+	a: [16, 46],
+	b: [50, 51, 60, 61,62, 63],
+	l: [15],
+	r: [17]
+};
+
+const generateMainPlanes = (position, {tileCount = 10} = {}): TileEdge[] => {
+	return range(tileCount).map((j) => simplex.noise2D(position, j) > 0 ? TileEdge.B : TileEdge.A;
+};
+								
+const enforceHorizontalSpacing = strip => strip.map((idx, col) => {
+	// There's a Type "A" tile sandwiched between two Type "B"s; changes the left one
+	if (col < strip.length - 1 && idx == TileEdge.B &&
+		strip[col + 1] == TileEdge.A && strip[col + 2] == TileEdge.B) {
+		return TileEdge.A;
+	}		
+	return idx;
+};
+	
+const generateHorizontalEdges = strip => strip.map((idx, col) => {
+	if (idx == TileEdge.A) {
+			// Left edge
+			if (col > 0 && strip[col - 1]) {
+				return TileEdge.L;
+			}
+
+			// Right edge
+			if (col < strip.length - 1 && strip[col + 1]) {
+				return TileEdge.R;
+			}		
+	}
+	return idx;
+});
 
 const generateTileIndexes = (bottom, current, top, {tileCount = 10} = {}) => {
 	return current.map((idx, col) => { 
+		//switch 
+		/*
 		if (!idx && col > 0 && col < current.length -1) {
 			// Left edge
 			if (current[col - 1]) {
@@ -59,20 +104,27 @@ const generateTileIndexes = (bottom, current, top, {tileCount = 10} = {}) => {
 				return 9;
 			}
 		}
+		*/
 
-		return idx > 0 ? sample(floorTiles) : sample(floorTiles2);
+		return sample(tileIndexes[tileEdgeNames[idx]]);
 	});
+};
+	
+const generateStrip = (position) {
+	const step1 = generateMainPlanes(position);
+	const step2 = enforceHorizontalSpacing(step1);
+	return generateHorizontalEdges(step2);
 };
 
 export const mapGenerator = () => {
 	let position = 0;
 	
 	let bottom;
-	let current = generateTileIndexesStep1(position++);
-	let top = generateTileIndexesStep1(position++);
+	let current = generateStrip(position++);
+	let top = generateStrip(position++);
 	
 	return () => {
-		[bottom, current, top] = [current, top, generateTileIndexesStep1(position++)];		
+		[bottom, current, top] = [current, top, generateStrip(position++)];		
 		return generateTileIndexes(bottom, current, top);
 	}
 };
