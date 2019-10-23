@@ -159,9 +159,7 @@ const generateTileIndexes = ([bottom, current, top], {tileCount = 10} = {}) => {
 };
 	
 const generateStrip = (position) {
-	const step1 = generateMainPlanes(position);
-	const step2 = enforceHorizontalSpacing(step1);
-	return generateHorizontalEdges(step2);
+	return [generateMainPlanes, enforceHorizontalSpacing, generateHorizontalEdges].reduce((o, f) => f(o), position);
 };
 
 export const mapGenerator = () => {
@@ -172,10 +170,10 @@ export const mapGenerator = () => {
 	let top = generateStrip(position++);
 	
 	return () => {
-		const currentStrips = [bottom, current, top] = [current, top, generateStrip(position++)];		
-		const step1 = generateInnerCorners(currentStrips);
-		const step2 = generateVerticalEdges(step1);
-		const step3 = generateOuterCorners(step2);
-		return generateTileIndexes(step3);
+		const currentStrips = [current, top, generateStrip(position++)];
+		const tileTypes = [generateInnerCorners, generateVerticalEdges, generateOuterCorners]
+				.reduce((o, f) => f(o), currentStrips);
+		[bottom, current, top] = tileTypes;
+		return generateTileIndexes(tileTypes);
 	}
 };
