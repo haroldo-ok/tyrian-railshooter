@@ -8,7 +8,8 @@ const simplex = new SimplexNoise();
 enum TileEdge {
 	A, B, L, R,
 	BOTTOM, TOP,
-	TL, TR, BL, BR
+	ITL, ITR, IBL, IBR,
+	OTL, OTR, OBL, OBR
 };
 
 const tileEdgeNames = (() => {
@@ -29,10 +30,16 @@ const tileIndexes = {
 	r: [17],
 	top: [6],
 	bottom: [26],
-	tl: [8],
-	tr: [9],
-	bl: [18],
-	br: [19]
+	
+	itl: [5],
+	itr: [7],
+	ibl: [25],
+	ibr: [27],
+	
+	otl: [8],
+	otr: [9],
+	obl: [18],
+	obr: [19]
 };
 
 const generateMainPlanes = (position, {tileCount = 10} = {}): TileEdge[] => {
@@ -51,18 +58,50 @@ const enforceHorizontalSpacing = strip => strip.map((idx, col) => {
 const generateHorizontalEdges = strip => strip.map((idx, col) => {
 	if (idx == TileEdge.A) {
 			// Left edge
-			if (col > 0 && strip[col - 1]) {
+			if (col > 0 && strip[col - 1] == TileEdge.B) {
 				return TileEdge.L;
 			}
 
 			// Right edge
-			if (col < strip.length - 1 && strip[col + 1]) {
+			if (col < strip.length - 1 && strip[col + 1] == TileEdge.B) {
 				return TileEdge.R;
 			}		
 	}
 	return idx;
 });
 	
+const generateInnerCorners = ([bottom, current, top]) => {
+	const currentWithCorners = current.map((idx, col) => {
+		if (idx == TileEdge.L) {
+			// Top left
+			if (top[col] == TileEdge.B) {
+				return TileEdge.ITL;
+			}
+			// Bottom left
+			if (bottom[col] == TileEdge.B) {
+				return TileEdge.IBL;
+			}
+			return idx;
+		}
+
+		if (idx == TileEdge.R) {
+			// Top right
+			if (top[col] == TileEdge.B) {
+				return TileEdge.ITR;
+			}
+			// Bottom right
+			if (bottom[col] == TileEdge.B) {
+				return TileEdge.IBR;
+			}
+			return idx;
+		}
+
+		return idx;
+	});
+
+	return [bottom, currentWithCorners, top];
+});
+
 const generateVerticalEdges = ([bottom, current, top]) => {
 	const currentWithEdges = current.map((idx, col) => {
 		if (idx != TileEdge.A) {
@@ -83,30 +122,30 @@ const generateVerticalEdges = ([bottom, current, top]) => {
 	return [bottom, currentWithEdges, top];
 });
 	
-const generateCorners = ([bottom, current, top]) => {
+const generateOuterCorners = ([bottom, current, top]) => {
 	const currentWithCorners = current.map((idx, col) => {
 		if (idx != TileEdge.A) {
 			return idx;
 		}
 
 		// Top left corner
-		if (col > 0 && top[col - 1]) {
-			return TileEdge.TL;
+		if (col > 0 && top[col - 1] == TileEdge.B) {
+			return TileEdge.OTL;
 		}
 
 		// Top right corner
-		if (col < current.length - 1 && top[col + 1]) {
-			return TileEdge.TR;
+		if (col < current.length - 1 && top[col + 1] == TileEdge.B) {
+			return TileEdge.OTR;
 		}
 
 		// Bottom left corner
-		if (col > 0 && bottom[col - 1]) {
-			return TileEdge.BL;
+		if (col > 0 && bottom[col - 1] == TileEdge.B) {
+			return TileEdge.OBL;
 		}
 
 		// Bottom right corner
-		if (col < current.length - 1 && bottom[col + 1]) {
-			return TileEdge.BR;
+		if (col < current.length - 1 && bottom[col + 1] == TileEdge.B) {
+			return TileEdge.OBR;
 		}
 
 		return idx;
@@ -134,8 +173,9 @@ export const mapGenerator = () => {
 	
 	return () => {
 		const currentStrips = [bottom, current, top] = [current, top, generateStrip(position++)];		
-		const step1 = generateVerticalEdges(currentStrips);
-		const step2 = generateCorners(step1);
-		return generateTileIndexes(step2);
+		const step1 = generateInnerCorners(currentStrips);
+		const step2 = generateVerticalEdges(step1);
+		const step3 = generateOuterCorners(step2);
+		return generateTileIndexes(step3);
 	}
 };
