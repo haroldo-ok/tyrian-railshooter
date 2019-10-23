@@ -69,7 +69,29 @@ const generateHorizontalEdges = strip => strip.map((idx, col) => {
 	}
 	return idx;
 });
-	
+
+const enforceVerticalSpacing = ([bottom, current, top]) => {
+	const topWithSpacing = top.map((idx, col) => {
+		if (idx == TileEdge.B && current[col] == TileEdge.A && bottom[col] == TileEdge.B) {
+			return TileEdge.A;
+		}
+		
+		// Diagonals
+		if (col > 0 && col < top.length) {
+			if (top[col - 1] == TileEdge.B && current[col] == TileEdge.A && bottom[col + 1] == TileEdge.B ||
+			   top[col + 1] == TileEdge.B && current[col] == TileEdge.A && bottom[col - 1] == TileEdge.B ||
+			   idx == TileEdge.B && current[col] == TileEdge.A && current[col - 1] == TileEdge.B && top[col - 1] == TileEdge.A ||
+			   idx == TileEdge.B && current[col] == TileEdge.A && current[col + 1] == TileEdge.B && top[col + 1] == TileEdge.A) {
+				return TileEdge.A;
+			}
+		}
+
+		return idx;
+	});
+
+	return [bottom, current, topWithSpacing];
+});
+
 const generateInnerCorners = ([bottom, current, top]) => {
 	const currentWithCorners = current.map((idx, col) => {
 		if (idx == TileEdge.L) {
@@ -158,22 +180,33 @@ const generateTileIndexes = ([bottom, current, top], {tileCount = 10} = {}) => {
 	return current.map((idx, col) => sample(tileIndexes[tileEdgeNames[idx]]));
 };
 	
-const generateStrip = (position) {
-	return [generateMainPlanes, enforceHorizontalSpacing, generateHorizontalEdges].reduce((o, f) => f(o), position);
-};
-
-export const mapGenerator = () => {
-	let position = 0;
+const generateMainPlaneWithHorizontalSpacing = position => [generateMainPlanes, enforceHorizontalSpacing].reduce((o, f) => f(o), position);
 	
-	let bottom;
-	let current = generateStrip(position++);
-	let top = generateStrip(position++);
+const createStripGenerator = () => {
+	let position = 0;
+	let [a, b, c] = [
+		null,
+		generateMainPlaneWithHorizontalSpacing(position++),
+		generateMainPlaneWithHorizontalSpacing(position++)
+	];
 	
 	return () => {
-		const currentStrips = [current, top, generateStrip(position++)];
+		[a, b, c] = enforceVerticalSpacing([b, c, generateMainPlaneWithHorizontalSpacing(position++)]);
+		return generateHorizontalEdges(c);
+	}
+}
+	
+export const mapGenerator = () => {
+	const generateStrip = createStripGenerator();
+	
+	let bottom;
+	let current = generateStrip();
+	let top = generateStrip();
+	
+	return () => {
+		const currentStrips = [bottom, current, top] = enforceVerticalSpacing([current, top, generateStrip()]);
 		const tileTypes = [generateInnerCorners, generateVerticalEdges, generateOuterCorners]
 				.reduce((o, f) => f(o), currentStrips);
-		[bottom, current, top] = tileTypes;
 		return generateTileIndexes(tileTypes);
 	}
 };
