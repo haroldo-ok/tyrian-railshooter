@@ -1,7 +1,7 @@
 'use strict';
 
 import * as THREE from 'three';
-import {sample} from 'lodash';
+import {range, sample} from 'lodash';
 import SimplexNoise from 'simplex-noise';
 
 import {mapGenerator} from './map-generator';
@@ -72,12 +72,14 @@ const main2 = () => {
 		var floorMaterial = new THREE.MeshBasicMaterial( { map: floorTexture, side: THREE.DoubleSide, transparent: true } );
 		var floorMaterial2 = new THREE.MeshBasicMaterial( { map: floorTexture2, side: THREE.DoubleSide, transparent: true } );
 		
+		// Create floor textures
+		
 		const tileWidth = 24;
 		const tileHeight = 28;
 		const tileCountX = Math.floor(256 / tileWidth);
 		const tileCountY = Math.floor(256 / tileHeight);
 		const tileCount = tileCountX * tileCountY;
-		const floorMaterials = createArrayOfSize(tileCount).map((o, i) => {
+		const floorMaterials = range(tileCount).map((o, i) => {
 			const tileX = i % tileCountX;
 			const tileY = Math.floor(i / tileCountX);
 			const textureX = tileX * tileWidth;
@@ -89,84 +91,8 @@ const main2 = () => {
 			
 			return new THREE.MeshBasicMaterial( { map: texture, side: THREE.DoubleSide, transparent: true } );
 		});
-						
-		/*
-		const step1Tiles = [];
-		const floorTiles = [50, 51, 60, 61,62, 63];
-		const floorTiles2 = [16, 46];
-
-		const generateTileIndexesStep1 = (tileCount = 10) => {
-			const position = step1Tiles.length;
-			const indexes = createArrayOfSize(tileCount).map((o2, j) => simplex.noise2D(position, j) > 0.5 ? 1 : 0;
-			step1Tiles.push(indexes);
-			
-			return indexes;
-		};
 		
-		const generateTileIndexes = (tileCount = 10) => {
-			generateTileIndexesStep1();
-			
-			const row = step1Tiles.length - 2;
-			const prevStrip = step1Tiles[row - 1];
-			const strip = step1Tiles[row];
-			const nextStrip = step1Tiles[row + 1];
-			
-			return strip.map((idx, col) => { 
-				if (!idx && col > 0 && col < strip.length -1) {
-					// Left edge
-					if (strip[col - 1]) {
-						return prevStrip[col] ? 5 
-							: nextStrip[col] ? 25
-							: 15;
-					}
-
-					// Right edge
-					if (strip[col + 1]) {
-						return prevStrip[col] ? 7
-							: nextStrip[col] ? 27
-							: 17;
-					}
-					
-					// Bottom edge
-					if (prevStrip[col]) {
-						return 26;
-					}
-
-					// Top edge
-					if (nextStrip[col]) {
-						return 6;
-					}
-
-					// Bottom left corner
-					if (prevStrip[col - 1]) {
-						return 18;
-					}
-
-					// Bottom right corner
-					if (prevStrip[col + 1]) {
-						return 19;
-					}
-					
-					// Top left corner
-					if (nextStrip[col - 1]) {
-						return 8;
-					}
-
-					// Top right corner
-					if (nextStrip[col + 1]) {
-						return 9;
-					}
-				}
-				
-				return idx > 0 ? sample(floorTiles) : sample(floorTiles2);
-			});
-		};
-
-		for (let i = 0; i != 3; i++) {			
-			generateTileIndexesStep1();
-		}
-		
-		*/
+		// Create floor
 		
 		const [floorContainer, floorAnimator] = createThreadmill({
 			tileIndexesGenerator: mapGenerator(),
@@ -198,7 +124,7 @@ const main2 = () => {
 		sprite2.position.set(-100, 50, 0);
 		scene.add(sprite2);
 
-		enemies = createArrayOfSize(5).map((o, i) => {
+		enemies = range(5).map((o, i) => {
 			const sprite = createSprite(crateTexture);
 			sprite.position.set(-0, 50, 0);
 			scene.add(sprite);
@@ -216,7 +142,7 @@ const main2 = () => {
 		ushipTexture = loader.load(enemyImageURL);
 		animators.push(makeTextureAnimator(ushipTexture, {textureY: 256 - 6 * 28}));
 		
-		uships = createArrayOfSize(5).map((o, i) => {
+		uships = range(5).map((o, i) => {
 			const sprite = createSprite(ushipTexture);
 			sprite.position.set(-200, 50, 0);
 			scene.add(sprite);
@@ -327,7 +253,5 @@ function createSprite(texture, {width = 64, height = 64} = {}) {
 	sprite.scale.set( width, height, 1.0 );
 	return sprite
 }
-
-const createArrayOfSize = size => [...Array(size)];
 
 main2();

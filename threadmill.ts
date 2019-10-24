@@ -6,11 +6,10 @@ import {range} from 'lodash';
 
 export const createThreadmill = ({tileIndexesGenerator, materials, segmentCount = 10}) => {
 	
-	const floorContainer = new THREE.Object3D();
+	const container = new THREE.Object3D();
 	
 	const floorStrips = range(segmentCount).map((o, i) => {
 		var floorGeometry = createFloorStripGeometry();
-		//updateFloorTileIndexes(floorGeometry, createArrayOfSize(floorGeometry.faces.length / 2).map(() => sample(floorTiles)));
 		updateFloorTileIndexes(floorGeometry, tileIndexesGenerator());
 		window['floorGeometry'] = floorGeometry;
 
@@ -20,7 +19,7 @@ export const createThreadmill = ({tileIndexesGenerator, materials, segmentCount 
 		floor.position.z = (5 - i) * 110;
 		floor.rotation.x = Math.PI / 2;            
 
-		floorContainer.add(floor);
+		container.add(floor);
 
 		return floor;
 	});
@@ -35,7 +34,7 @@ export const createThreadmill = ({tileIndexesGenerator, materials, segmentCount 
 		});
 	});
 	
-	return [floorContainer, update];
+	return [container, update];
 	
 };
 
