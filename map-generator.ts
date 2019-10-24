@@ -180,24 +180,29 @@ const generateTileIndexes = ([bottom, current, top], {tileCount = 10} = {}) => {
 	return current.map((idx, col) => sample(tileIndexes[tileEdgeNames[idx]]));
 };
 	
-const generateMainPlaneWithHorizontalSpacing = position => [generateMainPlanes, enforceHorizontalSpacing].reduce((o, f) => f(o), position);
+const generateMainPlaneWithHorizontalSpacing = (position, {tileCount = 10} = {}) => {
+	const step1 = generateMainPlanes(position, {tileCount});
+	return enforceHorizontalSpacing(step1);
+};
 	
-const createStripGenerator = () => {
+const createStripGenerator = ({tileCount = 10} = {}) => {
+	const options = {tileCount};
+	
 	let position = 0;
 	let [a, b, c] = [
 		null,
-		generateMainPlaneWithHorizontalSpacing(position++),
-		generateMainPlaneWithHorizontalSpacing(position++)
+		generateMainPlaneWithHorizontalSpacing(position++, options),
+		generateMainPlaneWithHorizontalSpacing(position++, options)
 	];
 	
 	return () => {
-		[a, b, c] = enforceVerticalSpacing([b, c, generateMainPlaneWithHorizontalSpacing(position++)]);
+		[a, b, c] = enforceVerticalSpacing([b, c, generateMainPlaneWithHorizontalSpacing(position++, options)]);
 		return generateHorizontalEdges(c);
 	}
 }
 	
-export const mapGenerator = () => {
-	const generateStrip = createStripGenerator();
+export const mapGenerator = ({tileCount = 10} = {}) => {
+	const generateStrip = createStripGenerator({tileCount});
 	
 	let bottom;
 	let current = generateStrip();

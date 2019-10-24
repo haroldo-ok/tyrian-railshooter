@@ -4,12 +4,13 @@ import * as THREE from 'three';
 import {range} from 'lodash';
 
 
-export const createThreadmill = ({tileIndexesGenerator, materials, segmentCount = 10}) => {
+export const createThreadmill = ({tileIndexesGenerator, materials, tileCount = 10, segmentCount = 10}) => {
 	
+	const options = {tileCount};	
 	const container = new THREE.Object3D();
 	
 	const floorStrips = range(segmentCount).map((o, i) => {
-		var floorGeometry = createFloorStripGeometry();
+		var floorGeometry = createFloorStripGeometry(options);
 		updateFloorTileIndexes(floorGeometry, tileIndexesGenerator());
 		window['floorGeometry'] = floorGeometry;
 
@@ -27,9 +28,9 @@ export const createThreadmill = ({tileIndexesGenerator, materials, segmentCount 
 	const update = delta => {
 		floorStrips.forEach(strip => {
 			strip.position.z += delta * 100;
-			if (strip.position.z > 5 * 110) {
-				strip.position.z -= 10 * 110;
-				updateFloorTileIndexes(floorGeometry, tileIndexesGenerator());
+			if (strip.position.z > segmentCount * 110 / 2) {
+				strip.position.z -= segmentCount * 110;
+				updateFloorTileIndexes(floorGeometry, tileIndexesGenerator(options));
 			}
 		});
 	});
@@ -42,8 +43,8 @@ const updateFloorTileIndexes = (geometry, tileNumbers) => {
 	geometry.faces.forEach((m, i) => m.materialIndex = tileNumbers[i >> 1]);
 };
 
-const createFloorStripGeometry = () => {
-	const geometry = new THREE.PlaneGeometry(1000, 110, 10, 1);		
+const createFloorStripGeometry = ({tileCount = 10}) => {
+	const geometry = new THREE.PlaneGeometry(100 * tileCount, 110, tileCount, 1);		
 
 	const floorScale = 24/256;
 	geometry.faceVertexUvs.forEach(layer => layer.forEach((face, i) => {

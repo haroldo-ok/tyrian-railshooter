@@ -92,11 +92,14 @@ const main2 = () => {
 			return new THREE.MeshBasicMaterial( { map: texture, side: THREE.DoubleSide, transparent: true } );
 		});
 		
+		const FLOOR_TILE_COUNT = 25;
+		
 		// Create floor
 		
 		const [floorContainer, floorAnimator] = createThreadmill({
-			tileIndexesGenerator: mapGenerator(),
-			materials: floorMaterials
+			tileIndexesGenerator: mapGenerator({tileCount: FLOOR_TILE_COUNT}),
+			materials: floorMaterials,
+			tileCount: FLOOR_TILE_COUNT
 		});
         
         animators.push(floorAnimator);
