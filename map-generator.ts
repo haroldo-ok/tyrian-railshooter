@@ -44,7 +44,7 @@ export const desertTileIndexes = {
 
 export const cloudTileIndexes = {
 	a: [13, 20, 21],
-	b: [43],
+	b: [-1],
 	l: [12],
 	r: [14],
 	top: [3],

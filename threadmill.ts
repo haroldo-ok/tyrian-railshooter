@@ -4,7 +4,7 @@ import * as THREE from 'three';
 import {range} from 'lodash';
 
 
-export const createThreadmill = ({tileIndexesGenerator, materials, tileCount = 10, segmentCount = 10}) => {
+export const createThreadmill = ({tileIndexesGenerator, materials, tileCount = 10, segmentCount = 20}) => {
 	const options = {tileCount};	
 	const container = new THREE.Object3D();
 	
@@ -15,7 +15,7 @@ export const createThreadmill = ({tileIndexesGenerator, materials, tileCount = 1
 
 
 		var floor = new THREE.Mesh(floorGeometry, materials);
-		floor.position.y = -0.5;
+		//floor.position.y = -0.5;
 		floor.position.z = (5 - i) * 110;
 		floor.rotation.x = Math.PI / 2;            
 

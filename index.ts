@@ -95,22 +95,33 @@ const main2 = () => {
 		const FLOOR_TILE_COUNT = 25;
 		
 		// Create floor
-		
-		console.log('Desert tiles', desertTileIndexes);
-		
-//		const tileIndexesGenerator = mapGenerator({tileCount: FLOOR_TILE_COUNT, tileTypeIndexes: desertTileIndexes});
-		const tileIndexesGenerator = mapGenerator({tileCount: FLOOR_TILE_COUNT, tileTypeIndexes: cloudTileIndexes, cutoff: -0.2});
+				
+		const tileIndexesGenerator = mapGenerator({tileCount: FLOOR_TILE_COUNT, tileTypeIndexes: desertTileIndexes});
 		
 		const [floorContainer, floorAnimator] = createThreadmill({
 			tileIndexesGenerator,
 			materials: floorMaterials,
 			tileCount: FLOOR_TILE_COUNT
 		});
+		
+		floorContainer.position.y = -100;
         
-        animators.push(floorAnimator);
-                
+        animators.push(floorAnimator);                
 		scene.add(floorContainer);
+		
+		// Create clouds
         
+		const cloudTileIndexesGenerator = mapGenerator({tileCount: FLOOR_TILE_COUNT, tileTypeIndexes: cloudTileIndexes, cutoff: -0.2});
+		
+		const [cloudContainer, cloudAnimator] = createThreadmill({
+			tileIndexesGenerator: cloudTileIndexesGenerator,
+			materials: floorMaterials,
+			tileCount: FLOOR_TILE_COUNT
+		});
+        
+        animators.push(cloudAnimator);                
+		scene.add(cloudContainer);
+
 		// SKYBOX/FOG
 		var skyBoxGeometry = new THREE.CubeGeometry( 10000, 10000, 10000 );
 		var skyBoxMaterial = new THREE.MeshBasicMaterial( { color: 0x9999ff, side: THREE.BackSide } );
