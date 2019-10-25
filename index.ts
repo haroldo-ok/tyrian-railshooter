@@ -1,7 +1,7 @@
 'use strict';
 
 import * as THREE from 'three';
-import {range, sample} from 'lodash';
+import {range, sample, flatten, values} from 'lodash';
 import SimplexNoise from 'simplex-noise';
 
 import {mapGenerator, desertTileIndexes, cloudTileIndexes} from './map-generator';
@@ -74,6 +74,8 @@ const main2 = () => {
 		
 		// Create floor textures
 		
+		const transparentTiles = flatten(values(cloudTileIndexes)).filter(x => x >= 0);
+
 		const tileWidth = 24;
 		const tileHeight = 28;
 		const tileCountX = Math.floor(256 / tileWidth);
@@ -84,14 +86,15 @@ const main2 = () => {
 			const tileY = Math.floor(i / tileCountX);
 			const textureX = tileX * tileWidth;
 			const textureY = 256 - (tileY + 1) * tileHeight;
+			const opacity = transparentTiles.includes(i) ? 0.6 : 1;
 
 			var texture = loader.load(floorImageURL);
 			animators.push(makeTextureAnimator(texture, {textureX, textureY, framesX: 1}));
 			texture.repeat.set(1, 1);
 			
-			return new THREE.MeshBasicMaterial( { map: texture, side: THREE.DoubleSide, transparent: true } );
+			return new THREE.MeshBasicMaterial( { map: texture, side: THREE.DoubleSide, transparent: true, opacity } );
 		});
-		
+				
 		const FLOOR_TILE_COUNT = 25;
 		
 		// Create floor
@@ -127,7 +130,7 @@ const main2 = () => {
 		var skyBoxMaterial = new THREE.MeshBasicMaterial( { color: 0x9999ff, side: THREE.BackSide } );
 		var skyBox = new THREE.Mesh( skyBoxGeometry, skyBoxMaterial );
 		scene.add(skyBox);
-		scene.fog = new THREE.FogExp2( 0x9999ff, 0.00025 );
+		scene.fog = new THREE.Fog( 0x9999ff, 1000, 1500);
 
 		////////////
 		// CUSTOM //
