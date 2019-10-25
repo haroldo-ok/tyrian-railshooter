@@ -23,7 +23,7 @@ const tileEdgeNames = (() => {
 })();
 console.log(tileEdgeNames);
 
-const tileIndexes = {
+export const desertTileIndexes = {
 	a: [16, 46],
 	b: [50, 51, 60, 61,62, 63],
 	l: [15],
@@ -176,8 +176,8 @@ const generateOuterCorners = ([bottom, current, top]) => {
 	return [bottom, currentWithCorners, top];
 });
 
-const generateTileIndexes = ([bottom, current, top], {tileCount = 10} = {}) => {
-	return current.map((idx, col) => sample(tileIndexes[tileEdgeNames[idx]]));
+const generateTileIndexes = ([bottom, current, top], {tileTypeIndexes} = {}) => {
+	return current.map((idx, col) => sample(tileTypeIndexes[tileEdgeNames[idx]]));
 };
 	
 const generateMainPlaneWithHorizontalSpacing = (position, {tileCount = 10} = {}) => {
@@ -201,7 +201,7 @@ const createStripGenerator = ({tileCount = 10} = {}) => {
 	}
 }
 	
-export const mapGenerator = ({tileCount = 10} = {}) => {
+export const mapGenerator = ({tileCount = 10, tileTypeIndexes} = {}) => {
 	const generateStrip = createStripGenerator({tileCount});
 	
 	let bottom;
@@ -212,6 +212,6 @@ export const mapGenerator = ({tileCount = 10} = {}) => {
 		const currentStrips = [bottom, current, top] = enforceVerticalSpacing([current, top, generateStrip()]);
 		const tileTypes = [generateInnerCorners, generateVerticalEdges, generateOuterCorners]
 				.reduce((o, f) => f(o), currentStrips);
-		return generateTileIndexes(tileTypes);
+		return generateTileIndexes(tileTypes, {tileTypeIndexes});
 	}
 };

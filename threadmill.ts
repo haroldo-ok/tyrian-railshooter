@@ -5,7 +5,6 @@ import {range} from 'lodash';
 
 
 export const createThreadmill = ({tileIndexesGenerator, materials, tileCount = 10, segmentCount = 10}) => {
-	
 	const options = {tileCount};	
 	const container = new THREE.Object3D();
 	
