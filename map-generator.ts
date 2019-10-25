@@ -42,8 +42,27 @@ export const desertTileIndexes = {
 	obr: [19]
 };
 
-const generateMainPlanes = (position, {tileCount = 10} = {}): TileEdge[] => {
-	return range(tileCount).map((j) => simplex.noise2D(position, j) > 0 ? TileEdge.B : TileEdge.A;
+export const cloudTileIndexes = {
+	a: [13, 20, 21],
+	b: [43],
+	l: [12],
+	r: [14],
+	top: [3],
+	bottom: [23],
+	
+	itl: [2],
+	itr: [4],
+	ibl: [22],
+	ibr: [24],
+	
+	otl: [0],
+	otr: [1],
+	obl: [10],
+	obr: [11]
+};
+
+const generateMainPlanes = (position, {tileCount = 10, cutoff = 0} = {}): TileEdge[] => {
+	return range(tileCount).map((j) => simplex.noise2D(position, j) > cutoff ? TileEdge.B : TileEdge.A;
 };
 								
 const enforceHorizontalSpacing = strip => strip.map((idx, col) => {
@@ -180,13 +199,13 @@ const generateTileIndexes = ([bottom, current, top], {tileTypeIndexes} = {}) => 
 	return current.map((idx, col) => sample(tileTypeIndexes[tileEdgeNames[idx]]));
 };
 	
-const generateMainPlaneWithHorizontalSpacing = (position, {tileCount = 10} = {}) => {
-	const step1 = generateMainPlanes(position, {tileCount});
+const generateMainPlaneWithHorizontalSpacing = (position, {tileCount = 10, cutoff = 0} = {}) => {
+	const step1 = generateMainPlanes(position, {tileCount, cutoff});
 	return enforceHorizontalSpacing(step1);
 };
 	
-const createStripGenerator = ({tileCount = 10} = {}) => {
-	const options = {tileCount};
+const createStripGenerator = ({tileCount = 10, cutoff = 0} = {}) => {
+	const options = {tileCount, cutoff};
 	
 	let position = 0;
 	let [a, b, c] = [
@@ -201,8 +220,8 @@ const createStripGenerator = ({tileCount = 10} = {}) => {
 	}
 }
 	
-export const mapGenerator = ({tileCount = 10, tileTypeIndexes} = {}) => {
-	const generateStrip = createStripGenerator({tileCount});
+export const mapGenerator = ({tileCount = 10, cutoff = 0, tileTypeIndexes} = {}) => {
+	const generateStrip = createStripGenerator({tileCount, cutoff});
 	
 	let bottom;
 	let current = generateStrip();

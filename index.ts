@@ -4,7 +4,7 @@ import * as THREE from 'three';
 import {range, sample} from 'lodash';
 import SimplexNoise from 'simplex-noise';
 
-import {mapGenerator, desertTileIndexes} from './map-generator';
+import {mapGenerator, desertTileIndexes, cloudTileIndexes} from './map-generator';
 import {createThreadmill} from './threadmill';
 
 import imageURL from './desert.png';
@@ -98,8 +98,11 @@ const main2 = () => {
 		
 		console.log('Desert tiles', desertTileIndexes);
 		
+//		const tileIndexesGenerator = mapGenerator({tileCount: FLOOR_TILE_COUNT, tileTypeIndexes: desertTileIndexes});
+		const tileIndexesGenerator = mapGenerator({tileCount: FLOOR_TILE_COUNT, tileTypeIndexes: cloudTileIndexes, cutoff: -0.2});
+		
 		const [floorContainer, floorAnimator] = createThreadmill({
-			tileIndexesGenerator: mapGenerator({tileCount: FLOOR_TILE_COUNT, tileTypeIndexes: desertTileIndexes}),
+			tileIndexesGenerator,
 			materials: floorMaterials,
 			tileCount: FLOOR_TILE_COUNT
 		});
