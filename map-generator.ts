@@ -3,8 +3,6 @@
 import {range, sample} from 'lodash';
 import SimplexNoise from 'simplex-noise';
 
-const simplex = new SimplexNoise();
-
 enum TileEdge {
 	A, B, L, R,
 	BOTTOM, TOP,
@@ -61,8 +59,27 @@ export const cloudTileIndexes = {
 	obr: [11]
 };
 
-const generateMainPlanes = (position, {tileCount = 10, cutoff = 0} = {}): TileEdge[] => {
-	return range(tileCount).map((j) => simplex.noise2D(position, j) > cutoff ? TileEdge.B : TileEdge.A;
+export const rockTileIndexes = {
+	a: [76, 70, 71, 72, 73, 74],
+	b: [-1],
+	l: [75],
+	r: [77],
+	top: [66],
+	bottom: [86],
+	
+	itl: [68],
+	itr: [69],
+	ibl: [78],
+	ibr: [79],
+	
+	otl: [65],
+	otr: [67],
+	obl: [85],
+	obr: [87]
+};
+
+const generateMainPlanes = (position, {tileCount = 10, threshold = 0, noiseFunction} = {}): TileEdge[] => {
+	return range(tileCount).map((j) => noiseFunction(position, j) > threshold ? TileEdge.B : TileEdge.A;
 };
 								
 const enforceHorizontalSpacing = strip => strip.map((idx, col) => {
@@ -199,13 +216,15 @@ const generateTileIndexes = ([bottom, current, top], {tileTypeIndexes} = {}) => 
 	return current.map((idx, col) => sample(tileTypeIndexes[tileEdgeNames[idx]]));
 };
 	
-const generateMainPlaneWithHorizontalSpacing = (position, {tileCount = 10, cutoff = 0} = {}) => {
-	const step1 = generateMainPlanes(position, {tileCount, cutoff});
+const generateMainPlaneWithHorizontalSpacing = (position, {tileCount = 10, threshold = 0, noiseFunction} = {}) => {
+	const step1 = generateMainPlanes(position, {tileCount, threshold, noiseFunction});
 	return enforceHorizontalSpacing(step1);
 };
 	
-const createStripGenerator = ({tileCount = 10, cutoff = 0} = {}) => {
-	const options = {tileCount, cutoff};
+const createStripGenerator = ({tileCount = 10, threshold = 0} = {}) => {	
+	const simplex = new SimplexNoise();
+	const noiseFunction = (x, y) => simplex.noise2D(x, y);
+	const options = {tileCount, threshold, noiseFunction};
 	
 	let position = 0;
 	let [a, b, c] = [
@@ -220,8 +239,8 @@ const createStripGenerator = ({tileCount = 10, cutoff = 0} = {}) => {
 	}
 }
 	
-export const mapGenerator = ({tileCount = 10, cutoff = 0, tileTypeIndexes} = {}) => {
-	const generateStrip = createStripGenerator({tileCount, cutoff});
+export const mapGenerator = ({tileCount = 10, threshold = 0, tileTypeIndexes} = {}) => {
+	const generateStrip = createStripGenerator({tileCount, threshold});
 	
 	let bottom;
 	let current = generateStrip();

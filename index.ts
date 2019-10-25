@@ -4,7 +4,7 @@ import * as THREE from 'three';
 import {range, sample, flatten, values} from 'lodash';
 import SimplexNoise from 'simplex-noise';
 
-import {mapGenerator, desertTileIndexes, cloudTileIndexes} from './map-generator';
+import {mapGenerator, desertTileIndexes, cloudTileIndexes, rockTileIndexes} from './map-generator';
 import {createThreadmill} from './threadmill';
 
 import imageURL from './desert.png';
@@ -107,14 +107,14 @@ const main2 = () => {
 			tileCount: FLOOR_TILE_COUNT
 		});
 		
-		floorContainer.position.y = -100;
+		floorContainer.position.y = -150;
         
         animators.push(floorAnimator);                
 		scene.add(floorContainer);
 		
 		// Create clouds
         
-		const cloudTileIndexesGenerator = mapGenerator({tileCount: FLOOR_TILE_COUNT, tileTypeIndexes: cloudTileIndexes, cutoff: -0.2});
+		const cloudTileIndexesGenerator = mapGenerator({tileCount: FLOOR_TILE_COUNT, tileTypeIndexes: cloudTileIndexes, threshold: -0.2});
 		
 		const [cloudContainer, cloudAnimator] = createThreadmill({
 			tileIndexesGenerator: cloudTileIndexesGenerator,
@@ -122,8 +122,23 @@ const main2 = () => {
 			tileCount: FLOOR_TILE_COUNT
 		});
         
-        animators.push(cloudAnimator);                
+		cloudContainer.position.y = -50;
+
+		animators.push(cloudAnimator);                
 		scene.add(cloudContainer);
+		
+		// Create floating rocks
+        
+		const rockTileIndexesGenerator = mapGenerator({tileCount: FLOOR_TILE_COUNT, tileTypeIndexes: rockTileIndexes, threshold: -0.3});
+		
+		const [rockContainer, rockAnimator] = createThreadmill({
+			tileIndexesGenerator: rockTileIndexesGenerator,
+			materials: floorMaterials,
+			tileCount: FLOOR_TILE_COUNT
+		});
+        
+        animators.push(rockAnimator);                
+		scene.add(rockContainer);
 
 		// SKYBOX/FOG
 		var skyBoxGeometry = new THREE.CubeGeometry( 10000, 10000, 10000 );
