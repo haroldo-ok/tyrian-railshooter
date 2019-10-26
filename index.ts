@@ -114,7 +114,7 @@ const main2 = () => {
 		
 		// Create clouds
         
-		const cloudTileIndexesGenerator = mapGenerator({tileCount: FLOOR_TILE_COUNT, tileTypeIndexes: cloudTileIndexes, threshold: -0.2});
+		const cloudTileIndexesGenerator = mapGenerator({tileCount: FLOOR_TILE_COUNT, tileTypeIndexes: cloudTileIndexes, threshold: -0.3});
 		
 		const [cloudContainer, cloudAnimator] = createThreadmill({
 			tileIndexesGenerator: cloudTileIndexesGenerator,

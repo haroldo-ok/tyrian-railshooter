@@ -224,6 +224,7 @@ const generateMainPlaneWithHorizontalSpacing = (position, {tileCount = 10, thres
 const createStripGenerator = ({tileCount = 10, threshold = 0} = {}) => {	
 	const simplex = new SimplexNoise();
 	const noiseFunction = (x, y) => simplex.noise2D(x, y);
+	
 	const options = {tileCount, threshold, noiseFunction};
 	
 	/*
@@ -246,6 +247,41 @@ const createStripGenerator = ({tileCount = 10, threshold = 0} = {}) => {
 		return generateMainPlanes(position++, options);
 	}
 }
+
+const holePatchingAutomata = [
+	{
+		pattern: [
+			'???',
+			'*.*',
+			'???',
+		],
+		result: TileEdge.A
+	},
+	{
+		pattern: [
+			'?*?',
+			'?.?',
+			'?*?',
+		],
+		result: TileEdge.A
+	},
+	{
+		pattern: [
+			'??*',
+			'?.?',
+			'*??',
+		],
+		result: TileEdge.A
+	},
+	{
+		pattern: [
+			'*??',
+			'?.?',
+			'??*',
+		],
+		result: TileEdge.A
+	},
+];
 
 const cornerAutomata = [
 
@@ -369,9 +405,9 @@ const patternMatches = (expected, actual, offset) => {
 	return true;
 }
 	
-const applyAutomata = ([bottom, current, top]) => {
+const applyAutomata = (automata, [bottom, current, top]) => {
 	const currentModified = current.map((idx, col) => {
-		return cornerAutomata.reduce((val, {pattern, result}) => {
+		return automata.reduce((val, {pattern, result}) => {
 			if (col > 0 && col < current.length - 1) {
 				if (val !== TileEdge.A && val !== TileEdge.B) {
 					return val;
@@ -407,7 +443,8 @@ export const mapGenerator = ({tileCount = 10, threshold = 0, tileTypeIndexes} = 
 				.reduce((o, f) => f(o), currentStrips);
 				*/
 		const currentStrips = [bottom, current, top] = [current, top, generateStrip()];		
-		const withAutomataApplied = applyAutomata(currentStrips);
-		return generateTileIndexes(withAutomataApplied, {tileTypeIndexes});
+		const withHolesPatched = applyAutomata(holePatchingAutomata, currentStrips);
+		const withCorners = applyAutomata(cornerAutomata, withHolesPatched);
+		return generateTileIndexes(withCorners, {tileTypeIndexes});
 	}
 };
