@@ -129,7 +129,7 @@ const main2 = () => {
 		
 		// Create floating rocks
         
-		const rockTileIndexesGenerator = mapGenerator({tileCount: FLOOR_TILE_COUNT, tileTypeIndexes: rockTileIndexes, threshold: -0.3});
+		const rockTileIndexesGenerator = mapGenerator({tileCount: FLOOR_TILE_COUNT, tileTypeIndexes: rockTileIndexes, threshold: -0.5});
 		
 		const [rockContainer, rockAnimator] = createThreadmill({
 			tileIndexesGenerator: rockTileIndexesGenerator,

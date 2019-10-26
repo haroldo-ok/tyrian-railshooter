@@ -226,6 +226,7 @@ const createStripGenerator = ({tileCount = 10, threshold = 0} = {}) => {
 	const noiseFunction = (x, y) => simplex.noise2D(x, y);
 	const options = {tileCount, threshold, noiseFunction};
 	
+	/*
 	let position = 0;
 	let [a, b, c] = [
 		null,
@@ -237,6 +238,159 @@ const createStripGenerator = ({tileCount = 10, threshold = 0} = {}) => {
 		[a, b, c] = enforceVerticalSpacing([b, c, generateMainPlaneWithHorizontalSpacing(position++, options)]);
 		return generateHorizontalEdges(c);
 	}
+	*/
+	
+	let position = 0;
+	
+	return () => {
+		return generateMainPlanes(position++, options);
+	}
+}
+
+const cornerAutomata = [
+
+	{
+		pattern: [
+			'?.?',
+			'?.*',
+			'?.?',
+		],
+		result: TileEdge.L
+	},
+	{
+		pattern: [
+			'?.?',
+			'*.?',
+			'?.?',
+		],
+		result: TileEdge.R
+	},
+	{
+		pattern: [
+			'???',
+			'...',
+			'?*?',
+		],
+		result: TileEdge.TOP
+	},
+	{
+		pattern: [
+			'?*?',
+			'...',
+			'???',
+		],
+		result: TileEdge.BOTTOM
+	},
+
+	
+	// Inner corner
+	{
+		pattern: [
+			'?*?',
+			'*.?',
+			'???',
+		],
+		result: TileEdge.ITL
+	},
+	{
+		pattern: [
+			'?*?',
+			'?.*',
+			'???',
+		],
+		result: TileEdge.ITR
+	},
+	{
+		pattern: [
+			'???',
+			'*.?',
+			'?*?',
+		],
+		result: TileEdge.IBL
+	},
+	{
+		pattern: [
+			'???',
+			'?.*',
+			'?*?',
+		],
+		result: TileEdge.IBR
+	},
+
+	// Outer corners
+	{
+		pattern: [
+			'???',
+			'?..',
+			'?.*',
+		],
+		result: TileEdge.OTL
+	},
+	{
+		pattern: [
+			'???',
+			'..?',
+			'*.?',
+		],
+		result: TileEdge.OTR
+	},
+	{
+		pattern: [
+			'?.*',
+			'?..',
+			'???',
+		],
+		result: TileEdge.OBL
+	},
+	{
+		pattern: [
+			'*.?',
+			'..?',
+			'???',
+		],
+		result: TileEdge.OBR
+	},
+	
+];
+	
+const patternTokenHandlers = {
+	'?': () => true,
+	'.': x => x === TileEdge.B,
+	'*': x => x === TileEdge.A
+};
+	
+const patternMatches = (expected, actual, offset) => {
+	for (let i = 0, j = offset - 1; i < expected.length; i++, j++) {
+		if (!patternTokenHandlers[expected[i]](actual[j])) {
+			return false;
+		}			
+	}
+	
+	return true;
+}
+	
+const applyAutomata = ([bottom, current, top]) => {
+	const currentModified = current.map((idx, col) => {
+		return cornerAutomata.reduce((val, {pattern, result}) => {
+			if (col > 0 && col < current.length - 1) {
+				if (val !== TileEdge.A && val !== TileEdge.B) {
+					return val;
+				}
+				
+				const [patTop, patCurrent, patBottom] = pattern;
+
+				if (patternMatches(patBottom, bottom, col) &&
+				   patternMatches(patCurrent, current, col) &&
+				   patternMatches(patTop, top, col)) {				
+					return result;
+				}
+			}
+			
+			return val;
+		}, idx);
+	});
+	
+	return [bottom, currentModified, top];
 }
 	
 export const mapGenerator = ({tileCount = 10, threshold = 0, tileTypeIndexes} = {}) => {
@@ -247,9 +401,13 @@ export const mapGenerator = ({tileCount = 10, threshold = 0, tileTypeIndexes} = 
 	let top = generateStrip();
 	
 	return () => {
+		/*
 		const currentStrips = [bottom, current, top] = enforceVerticalSpacing([current, top, generateStrip()]);
 		const tileTypes = [generateInnerCorners, generateVerticalEdges, generateOuterCorners]
 				.reduce((o, f) => f(o), currentStrips);
-		return generateTileIndexes(tileTypes, {tileTypeIndexes});
+				*/
+		const currentStrips = [bottom, current, top] = [current, top, generateStrip()];		
+		const withAutomataApplied = applyAutomata(currentStrips);
+		return generateTileIndexes(withAutomataApplied, {tileTypeIndexes});
 	}
 };
