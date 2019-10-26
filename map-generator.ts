@@ -82,143 +82,9 @@ const generateMainPlanes = (position, {tileCount = 10, threshold = 0, noiseFunct
 	return range(tileCount).map((j) => noiseFunction(position, j) > threshold ? TileEdge.B : TileEdge.A;
 };
 								
-const enforceHorizontalSpacing = strip => strip.map((idx, col) => {
-	// There's a Type "A" tile sandwiched between two Type "B"s; changes the left one
-	if (col < strip.length - 1 && idx == TileEdge.B &&
-		strip[col + 1] == TileEdge.A && strip[col + 2] == TileEdge.B) {
-		return TileEdge.A;
-	}		
-	return idx;
-};
-	
-const generateHorizontalEdges = strip => strip.map((idx, col) => {
-	if (idx == TileEdge.A) {
-			// Left edge
-			if (col > 0 && strip[col - 1] == TileEdge.B) {
-				return TileEdge.L;
-			}
-
-			// Right edge
-			if (col < strip.length - 1 && strip[col + 1] == TileEdge.B) {
-				return TileEdge.R;
-			}		
-	}
-	return idx;
-});
-
-const enforceVerticalSpacing = ([bottom, current, top]) => {
-	const topWithSpacing = top.map((idx, col) => {
-		if (idx == TileEdge.B && current[col] == TileEdge.A && bottom[col] == TileEdge.B) {
-			return TileEdge.A;
-		}
-		
-		// Diagonals
-		if (col > 0 && col < top.length) {
-			if (top[col - 1] == TileEdge.B && current[col] == TileEdge.A && bottom[col + 1] == TileEdge.B ||
-			   top[col + 1] == TileEdge.B && current[col] == TileEdge.A && bottom[col - 1] == TileEdge.B ||
-			   idx == TileEdge.B && current[col] == TileEdge.A && current[col - 1] == TileEdge.B && top[col - 1] == TileEdge.A ||
-			   idx == TileEdge.B && current[col] == TileEdge.A && current[col + 1] == TileEdge.B && top[col + 1] == TileEdge.A) {
-				return TileEdge.A;
-			}
-		}
-
-		return idx;
-	});
-
-	return [bottom, current, topWithSpacing];
-});
-
-const generateInnerCorners = ([bottom, current, top]) => {
-	const currentWithCorners = current.map((idx, col) => {
-		if (idx == TileEdge.L) {
-			// Top left
-			if (top[col] == TileEdge.B) {
-				return TileEdge.ITL;
-			}
-			// Bottom left
-			if (bottom[col] == TileEdge.B) {
-				return TileEdge.IBL;
-			}
-			return idx;
-		}
-
-		if (idx == TileEdge.R) {
-			// Top right
-			if (top[col] == TileEdge.B) {
-				return TileEdge.ITR;
-			}
-			// Bottom right
-			if (bottom[col] == TileEdge.B) {
-				return TileEdge.IBR;
-			}
-			return idx;
-		}
-
-		return idx;
-	});
-
-	return [bottom, currentWithCorners, top];
-});
-
-const generateVerticalEdges = ([bottom, current, top]) => {
-	const currentWithEdges = current.map((idx, col) => {
-		if (idx != TileEdge.A) {
-			return idx;
-		}
-
-		if (top[col] == TileEdge.B) {
-			return TileEdge.TOP;
-		}
-
-		if (bottom[col] == TileEdge.B) {
-			return TileEdge.BOTTOM;
-		}
-
-		return idx;
-	});
-
-	return [bottom, currentWithEdges, top];
-});
-	
-const generateOuterCorners = ([bottom, current, top]) => {
-	const currentWithCorners = current.map((idx, col) => {
-		if (idx != TileEdge.A) {
-			return idx;
-		}
-
-		// Top left corner
-		if (col > 0 && top[col - 1] == TileEdge.B) {
-			return TileEdge.OTL;
-		}
-
-		// Top right corner
-		if (col < current.length - 1 && top[col + 1] == TileEdge.B) {
-			return TileEdge.OTR;
-		}
-
-		// Bottom left corner
-		if (col > 0 && bottom[col - 1] == TileEdge.B) {
-			return TileEdge.OBL;
-		}
-
-		// Bottom right corner
-		if (col < current.length - 1 && bottom[col + 1] == TileEdge.B) {
-			return TileEdge.OBR;
-		}
-
-		return idx;
-	});
-
-	return [bottom, currentWithCorners, top];
-});
 
 const generateTileIndexes = ([bottom, current, top], {tileTypeIndexes} = {}) => {
 	return current.map((idx, col) => sample(tileTypeIndexes[tileEdgeNames[idx]]));
-};
-	
-const generateMainPlaneWithHorizontalSpacing = (position, {tileCount = 10, threshold = 0, noiseFunction} = {}) => {
-	const step1 = generateMainPlanes(position, {tileCount, threshold, noiseFunction});
-	return enforceHorizontalSpacing(step1);
 };
 	
 const createStripGenerator = ({tileCount = 10, threshold = 0} = {}) => {	
@@ -226,20 +92,6 @@ const createStripGenerator = ({tileCount = 10, threshold = 0} = {}) => {
 	const noiseFunction = (x, y) => simplex.noise2D(x, y);
 	
 	const options = {tileCount, threshold, noiseFunction};
-	
-	/*
-	let position = 0;
-	let [a, b, c] = [
-		null,
-		generateMainPlaneWithHorizontalSpacing(position++, options),
-		generateMainPlaneWithHorizontalSpacing(position++, options)
-	];
-	
-	return () => {
-		[a, b, c] = enforceVerticalSpacing([b, c, generateMainPlaneWithHorizontalSpacing(position++, options)]);
-		return generateHorizontalEdges(c);
-	}
-	*/
 	
 	let position = 0;
 	
@@ -437,11 +289,6 @@ export const mapGenerator = ({tileCount = 10, threshold = 0, tileTypeIndexes} = 
 	let top = generateStrip();
 	
 	return () => {
-		/*
-		const currentStrips = [bottom, current, top] = enforceVerticalSpacing([current, top, generateStrip()]);
-		const tileTypes = [generateInnerCorners, generateVerticalEdges, generateOuterCorners]
-				.reduce((o, f) => f(o), currentStrips);
-				*/
 		const currentStrips = [bottom, current, top] = [current, top, generateStrip()];		
 		const withHolesPatched = applyAutomata(holePatchingAutomata, currentStrips);
 		const withCorners = applyAutomata(cornerAutomata, withHolesPatched);
