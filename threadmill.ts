@@ -39,6 +39,7 @@ export const createThreadmill = ({tileIndexesGenerator, materials, tileCount = 1
 
 const updateFloorTileIndexes = (geometry, tileNumbers) => {
 	geometry.faces.forEach((m, i) => m.materialIndex = tileNumbers[i >> 1]);
+	geometry.groupsNeedUpdate = true;
 };
 
 const createFloorStripGeometry = ({tileCount = 10}) => {
