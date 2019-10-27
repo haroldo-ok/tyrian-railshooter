@@ -140,7 +140,7 @@ const cornerAutomata = [
 	{
 		pattern: [
 			'?.?',
-			'?.*',
+			'..*',
 			'?.?',
 		],
 		result: TileEdge.L
@@ -148,14 +148,14 @@ const cornerAutomata = [
 	{
 		pattern: [
 			'?.?',
-			'*.?',
+			'*..',
 			'?.?',
 		],
 		result: TileEdge.R
 	},
 	{
 		pattern: [
-			'???',
+			'?.?',
 			'...',
 			'?*?',
 		],
@@ -165,7 +165,7 @@ const cornerAutomata = [
 		pattern: [
 			'?*?',
 			'...',
-			'???',
+			'?.?',
 		],
 		result: TileEdge.BOTTOM
 	},
@@ -175,31 +175,31 @@ const cornerAutomata = [
 	{
 		pattern: [
 			'?*?',
-			'*.?',
-			'???',
+			'*..',
+			'?..',
 		],
 		result: TileEdge.ITL
 	},
 	{
 		pattern: [
 			'?*?',
-			'?.*',
-			'???',
+			'..*',
+			'..?',
 		],
 		result: TileEdge.ITR
 	},
 	{
 		pattern: [
-			'???',
-			'*.?',
+			'?..',
+			'*..',
 			'?*?',
 		],
 		result: TileEdge.IBL
 	},
 	{
 		pattern: [
-			'???',
-			'?.*',
+			'..?',
+			'..*',
 			'?*?',
 		],
 		result: TileEdge.IBR
@@ -208,16 +208,16 @@ const cornerAutomata = [
 	// Outer corners
 	{
 		pattern: [
-			'???',
-			'?..',
+			'..?',
+			'...',
 			'?.*',
 		],
 		result: TileEdge.OTL
 	},
 	{
 		pattern: [
-			'???',
-			'..?',
+			'?..',
+			'...',
 			'*.?',
 		],
 		result: TileEdge.OTR
@@ -225,16 +225,16 @@ const cornerAutomata = [
 	{
 		pattern: [
 			'?.*',
-			'?..',
-			'???',
+			'...',
+			'..?',
 		],
 		result: TileEdge.OBL
 	},
 	{
 		pattern: [
 			'*.?',
-			'..?',
-			'???',
+			'...',
+			'?..',
 		],
 		result: TileEdge.OBR
 	},
@@ -291,6 +291,8 @@ export const mapGenerator = ({tileCount = 10, threshold = 0, tileTypeIndexes} = 
 	return () => {
 		const currentStrips = [bottom, current, top] = [current, top, generateStrip()];		
 		const withHolesPatched = applyAutomata(holePatchingAutomata, currentStrips);
+		[bottom, current, top] = withHolesPatched;
+		
 		const withCorners = applyAutomata(cornerAutomata, withHolesPatched);
 		return generateTileIndexes(withCorners, {tileTypeIndexes});
 	}
