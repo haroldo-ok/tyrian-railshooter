@@ -48,15 +48,15 @@ export const cloudTileIndexes = {
 	top: [3],
 	bottom: [23],
 	
-	itl: [2],
-	itr: [4],
-	ibl: [22],
-	ibr: [24],
-	
-	otl: [0],
-	otr: [1],
-	obl: [10],
-	obr: [11]
+	itl: [0],
+	itr: [1],
+	ibl: [10],
+	ibr: [11]
+
+	otl: [2],
+	otr: [4],
+	obl: [22],
+	obr: [24],
 };
 
 export const rockTileIndexes = {
