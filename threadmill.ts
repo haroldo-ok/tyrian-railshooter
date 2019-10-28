@@ -15,7 +15,7 @@ export const createThreadmill = ({tileIndexesGenerator, materials, tileCount = 1
 
 
 		var floor = new THREE.Mesh(floorGeometry, materials);
-		floor.position.z = (5 - i) * 110;
+		floor.position.z = (segmentCount - i) * 110;
 		floor.rotation.x = Math.PI / 2;            
 
 		container.add(floor);
@@ -28,7 +28,7 @@ export const createThreadmill = ({tileIndexesGenerator, materials, tileCount = 1
 			strip.position.z += delta * 150;
 			if (strip.position.z > segmentCount * 110 / 2) {
 				strip.position.z -= segmentCount * 110;
-				updateFloorTileIndexes(floorGeometry, tileIndexesGenerator(options));
+				updateFloorTileIndexes(strip.geometry, tileIndexesGenerator(options));
 			}
 		});
 	});
@@ -39,6 +39,7 @@ export const createThreadmill = ({tileIndexesGenerator, materials, tileCount = 1
 
 const updateFloorTileIndexes = (geometry, tileNumbers) => {
 	geometry.faces.forEach((m, i) => m.materialIndex = tileNumbers[i >> 1]);
+	geometry.groupsNeedUpdate = true;
 };
 
 const createFloorStripGeometry = ({tileCount = 10}) => {

@@ -99,7 +99,7 @@ const main2 = () => {
 		
 		// Create floor
 				
-		const tileIndexesGenerator = mapGenerator({tileCount: FLOOR_TILE_COUNT, tileTypeIndexes: desertTileIndexes});
+		const tileIndexesGenerator = mapGenerator({tileCount: FLOOR_TILE_COUNT, tileTypeIndexes: desertTileIndexes, threshold: -0.3});
 		
 		const [floorContainer, floorAnimator] = createThreadmill({
 			tileIndexesGenerator,
@@ -114,7 +114,7 @@ const main2 = () => {
 		
 		// Create clouds
         
-		const cloudTileIndexesGenerator = mapGenerator({tileCount: FLOOR_TILE_COUNT, tileTypeIndexes: cloudTileIndexes, threshold: -0.3});
+		const cloudTileIndexesGenerator = mapGenerator({tileCount: FLOOR_TILE_COUNT, tileTypeIndexes: cloudTileIndexes, threshold: -0.5});
 		
 		const [cloudContainer, cloudAnimator] = createThreadmill({
 			tileIndexesGenerator: cloudTileIndexesGenerator,
