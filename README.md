@@ -1,9 +1,6 @@
 <h1 align="center">Welcome to tyrian-railshooter 👋</h1>
 <p>
   <img alt="Version" src="https://img.shields.io/badge/version-0.0.1-blue.svg?cacheSeconds=2592000" />
-  <a href="https://doc.com" target="_blank">
-    <img alt="Documentation" src="https://img.shields.io/badge/documentation-yes-brightgreen.svg" />
-  </a>
   <a href="#" target="_blank">
     <img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-yellow.svg" />
   </a>
@@ -14,9 +11,7 @@
 
 > A proof-of-concept 2.5 D railshooter mixing Tyrian-based graphics mixed with gameplay inspired by Tyrian itself plus Space Harrier, Galaxy Force and Axelay.
 
-### 🏠 [Homepage](https://aaaaaaa.com)
-
-### ✨ [Demo](https://demo.com)
+### ✨ [Demo](https://haroldo-ok-2.github.io/tyrian-railshooter/)
 
 ## Install
 
@@ -28,12 +23,6 @@ npm install
 
 ```sh
 npm start
-```
-
-## Run tests
-
-```sh
-npm run test
 ```
 
 ## Author
